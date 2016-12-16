@@ -31,7 +31,7 @@ class StringGenerator(object):
         return cherrypy.session['mystring']
 
 
-if __name__ == '__main__':
+def main():
     conf = {
         '/': {
             'tools.staticdir.on': True,
@@ -42,3 +42,6 @@ if __name__ == '__main__':
         },
     }
     cherrypy.quickstart(StringGenerator(), '/', conf)
+
+if __name__ == '__main__':
+    main()
