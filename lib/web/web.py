@@ -1,6 +1,7 @@
 import os, os.path
 import random
 import string
+import json
 
 import cherrypy
 
@@ -25,6 +26,10 @@ class StringGenerator(object):
     def get_picture(self, url=""):
         return get_pic.base64_picture(url)
 
+    @cherrypy.expose
+    def search(self, query):
+        return json.dumps({"book": {"title":"Gs", "author":"Bash Gs"},
+        "recommended":[{"title":"Gs1", "author":"Bash Gs1"}, {"title":"Gs2", "author":"Bash Gs2"}]})
 
     @cherrypy.expose
     def display(self):

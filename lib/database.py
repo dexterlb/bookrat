@@ -124,7 +124,7 @@ class WordBookController(Controller):
 class Word(Base):
     __tablename__ = 'word'
     id = Column(Integer, primary_key=True)
-    text = Column(String, unique=True)
+    text = Column(String)
     type = Column(String)
     from_dictionary = Column(Boolean)
     def __repr__(self):
