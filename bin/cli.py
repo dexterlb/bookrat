@@ -1,7 +1,8 @@
 import click
 import sys
 from ..lib import import_book
-from ..lib import database
+from ..lib import parse_dictionary
+from ..lib import megatron
 import progressbar
 
 @click.group()
@@ -12,24 +13,38 @@ def main():
 @click.option('--db', help='database URN', required=True)
 @click.argument('dir')
 def import_books(db, dir):
-    db = database.Database(db)
-    db.create_database()
-    importer = import_book.BookImporter(db)
+    m = megatron.Megatron(db)
+    importer = import_book.BookImporter(m)
 
     progress = progressbar.ProgressBar()
     importer.import_from(dir, progress)
 
+@click.command(help='import words from json dictionary file')
+@click.option('--db', help='database URN', required=True)
+@click.argument('dict')
+def parse_dict(db, dict):
+	m = megatron.Megatron(db)
+	parser = parse_dictionary.DictionaryParser(m)
+	parser.parse_dictionary_from(dict)
+
+
+
 @click.command(help='create the database')
 @click.option('--db', help='database URN', required=True)
-def createdb():
-    click.echo('Dropped the database')
+def createdb(db):
+    m = megatron.Megatron(db)
+    m.database.create_database()
+    click.echo('Created the database')
 
 @click.command(help='drop the database')
 @click.option('--db', help='database URN', required=True)
-def dropdb():
+def dropdb(db):
+    m = megatron.Megatron(db)
+    m.database.drop_all()
     click.echo('Dropped the database')
 
 main.add_command(import_books)
+main.add_command(parse_dict)
 main.add_command(createdb)
 main.add_command(dropdb)
 
