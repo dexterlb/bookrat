@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <title>Книжен плъх</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="bookrat.css">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="get-similar.js"></script>
+    </head>
+
+    <body>
+        <header>
+        </header>
+        
+        <section id="search">
+            <input placeholder="Въведи име на книга" id="title" />
+            <button id="get-similar" />Потърси</button>
+        </section>
+
+        <section id="result">
+            <section id="searched-book">
+                <div class="book">
+                    <div class="book-cover" id="book-cover"></div>
+                    <div class="book-info">
+                        <ul>
+                            <li>Заглавие: <span id="book-title"></span></li>
+                            <li>Автор: <span id="book-author"></span></li>
+                            <li>Най-често срещани думи: <span id="book-words"></span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <section id="suggested-books">
+                <div class="book">
+                    <div class="book-cover" id="recommended0-cover"></div>
+                    <div class="book-info">
+                        <ul>
+                            <li>Заглавие: <span id="recommended0-title"></span></li>
+                            <li>Автор: <span id="recommended0-author"></span></li>
+                            <li>Най-често срещани думи: <span id="recommended0-words"></span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="book">
+                    <div class="book-cover" id="recommended1-cover"></div>
+                    <div class="book-info">
+                        <ul>
+                            <li>Заглавие: <span id="recommended1-title"></span></li>
+                            <li>Автор: <span id="recommended1-author"></span></li>
+                            <li>Най-често срещани думи: <span id="recommended1-words"></span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <footer>
+        </footer>
+    </body>
+</html>
