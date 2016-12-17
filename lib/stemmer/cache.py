@@ -33,7 +33,7 @@ class BulkCall:
             try:
                 item = next(iterator)
                 if item in self.stop_words:
-                    hits.appendLeft(None)
+                    hits.appendleft(None)
                 elif self.cache and item in self.cache:
                     hits.appendleft(self.cache[item])
                 else:
