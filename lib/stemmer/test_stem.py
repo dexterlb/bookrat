@@ -1,7 +1,7 @@
 import unittest
 import json
 import os
-from .stem import Stemmer, load_dictionary
+from .stem import Stemmer, load_dictionary, load_stop_words
 from . import bulgarian_stems
 
 class TestStemmer(unittest.TestCase):
@@ -18,11 +18,17 @@ class TestStemmer(unittest.TestCase):
                     os.path.dirname(os.path.realpath(__file__)),
                     'bulgarian_words.json'
                 )
+            ),
+            load_stop_words(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'bulgarian_stop_words'
+                )
             )
         )
 
-def test_cases(test, stems, rules_file, dict_file):
-    stemmer = Stemmer(rules_file, dict_file)
+def test_cases(test, stems, rules_file, dictionary, stop_words):
+    stemmer = Stemmer(rules_file, stop_words, dictionary)
     errors = []
     for stem, cases in stems:
         for case in cases:
