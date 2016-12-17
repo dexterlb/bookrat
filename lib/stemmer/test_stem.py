@@ -41,7 +41,7 @@ def test_cases(test, stems, rules_file, dict_file):
             derived = list(stemmer([case]))[0]
             if derived != stem:
                 errors.append(case + ' -> ' + derived + ' instead of ' + stem)
-    test.AssertEqual([], stem)
+    self.AssertEqual([], stem)
 
 if __name__ == '__main__':
     unittest.main()
