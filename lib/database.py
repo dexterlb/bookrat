@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Float, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Float, ForeignKey, Text, ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -126,6 +126,16 @@ class TfIdfController(Controller):
             '''
         )
 
+    def compute_top_words(self):
+        self.database.engine.execute(
+            '''
+            insert into topwords(book_id, words)  
+            select b.id as book_id,
+            array(select word from tfidf where book_id = b.id
+            order by tfidf_score desc limit 10) as words from book as b;
+            '''
+        )
+
 class WordBookController(Controller):
     def add(self, word, book_id):
         session = self.make_session()
@@ -181,6 +191,14 @@ class Tfidf(Base):
     tfidf_score = Column(Float)
     def __repr__(self):
        return "<tfidf(book_id='%s', word='%s', tfidf_score='%s')>" % (
+        self.book_id, self.word, self.tfidf_score)
+
+class TopWords(Base):
+    __tablename__ = 'topwords'
+    book_id = Column(Integer, primary_key=True)
+    words = Column(ARRAY(String), primary_key=True)
+    def __repr__(self):
+       return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)
 
 

@@ -10,3 +10,6 @@ class TFIDF:
 
 	def compute_tfidf(self):
 		self.megatron.tf_idf_controller.compute_tfidf()
+
+	def compute_top_words(self):
+		self.megatron.tf_idf_controller.compute_top_words()
