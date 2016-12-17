@@ -6,7 +6,8 @@ from os import path
 import shutil
 from itertools import islice
 import time
-import cache
+
+from . import cache
 
 class Stemmer:
     def __init__(self, rules_file, dictionary=[], cache=None):
@@ -44,7 +45,7 @@ class Stemmer:
 
     def load_dictionary(self, dictionary):
         for word in dictionary:
-            self.add_base_word(word.text. word.type)
+            self.add_base_word(word.text, word.type)
 
     def add_base_word(self, text, word_type):
         self.prolog.assertz(word_type + "(" + encode(text) + ")")
