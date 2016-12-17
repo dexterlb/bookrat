@@ -29,8 +29,8 @@ class StringGenerator(object):
     @cherrypy.expose
     def search(self, query):
         return json.dumps({"book": {"title":"Gs", "author":"Bash Gs", "url":"https://chitanka.info/text/1"},
-        "recommended":[{"title":"Gs1", "author":"Bash Gs1", "url":"https://chitanka.info/text/2"},
-                       {"title":"Gs2", "author":"Bash Gs2", "url":"https://chitanka.info/text/3"}]})
+                           "recommended":[{"title":"Gs1", "author":"Bash Gs1", "url":"https://chitanka.info/text/2"},
+                                          {"title":"Gs2", "author":"Bash Gs2", "url":None}]})
 
     @cherrypy.expose
     def display(self):
