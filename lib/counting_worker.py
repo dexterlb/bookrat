@@ -11,19 +11,27 @@ from . import database
 from .ctrlc import CtrlC
 
 class BookGetter(Thread):
-    def __init__(self, input_books, megatron):
+    def __init__(self, input_books, megatron, book_id):
         super(BookGetter, self).__init__()
         self.input_books = input_books
         self.megatron = megatron
+        self.book_id = book_id
 
     def run(self):
-        for book in self.megatron.work_controller.yield_book():
-            if CtrlC.pressed:
-                break
-            self.input_books.put(book)
-            print("+ Taking from database: " + book.title)
-        self.input_books.put(None)
-        print("+ Took all.")
+        if self.book_id:
+            book = self.megatron.work_controller.get_by_id(self.book_id)
+            if book:
+                self.input_books.put(book)
+                print("Took book.")
+            self.input_books.put(None)
+        else:
+            for book in self.megatron.work_controller.yield_book():
+                if CtrlC.pressed:
+                    break
+                self.input_books.put(book)
+                print("+ Taking from database: " + book.title)
+            self.input_books.put(None)
+            print("+ Took all.")
 
 class WordCounter(Thread):
     def __init__(self, input_books, output_books, megatron):
@@ -88,12 +96,12 @@ class ResultSetter(Thread):
                 break
 
 
-def run(megatron):
+def run(megatron, book_id=None):
     megatron.work_controller.update_ids()
     input_books = Queue(maxsize=1)
     output_books = Queue(maxsize=1)
 
-    book_getter = BookGetter(input_books, megatron)
+    book_getter = BookGetter(input_books, megatron, book_id)
     word_counter = WordCounter(input_books, output_books, megatron)
     result_setter = ResultSetter(output_books, megatron)
 

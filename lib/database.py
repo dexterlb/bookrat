@@ -96,6 +96,22 @@ class WorkController(Controller):
         else:
             return None
 
+    def get_by_id(self, book_id):
+        record = self.database.engine.execute(q
+        '''
+            update work set taken=true
+            where book_id = %d returning book_id;''' % int(book_id)
+        ).first()
+
+        if record:
+            book_id = record[0]
+            session = self.make_session()
+            book = session.query(Book).filter(Book.id == book_id).first()
+            return book
+        else:
+            return None
+
+        book = session.query(Book).filter(Book.id == book_id).first()
 
 class BookController(Controller):
     def get_all(self):
@@ -105,6 +121,7 @@ class BookController(Controller):
             books.append(book)
         session.commit()
         return books
+
 
 class TfIdfController(Controller):
     def compute_idf(self):
