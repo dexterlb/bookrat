@@ -137,17 +137,6 @@ class TfIdfController(Controller):
         )
 
 class WordBookController(Controller):
-    def add(self, word, book_id):
-        session = self.make_session()
-        counters = session.query(WordBook).filter(WordBook.book_id == book_id, WordBook.word_id == word_id).all()
-        if len(counters) > 1:
-            print("Too many")
-        if len(counters) == 0:
-            session.add(WordBook(word = word, book_id=book_id, count=1))
-        else:
-            counters[0].count += 1        
-        session.commit()
-
     def get_all(self):
         counters = []
         session = self.make_session()
@@ -222,9 +211,8 @@ class WordBook(Base):
     book_id = Column(Integer, ForeignKey("book.id"), nullable=False)
     word = Column(String, nullable=False)
     count = Column(Integer)
-    tfidf = Column(Float)
     def __repr__(self):
-        return "<WordBook(book_id='%s', word='%s', count='%s', tfidf='%s')>" % (
-                            self.book_id, self.word, self.count, self.tfidf)
+        return "<WordBook(book_id='%s', word='%s', count='%s')>" % (
+                            self.book_id, self.word, self.count)
 
 

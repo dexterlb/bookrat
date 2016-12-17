@@ -40,7 +40,7 @@ class WordCounter(Thread):
                     'bulgarian_words.json'  # TODO: this as well
                 )
             ),
-            cache=LimitedCache(limit=200000)
+            cache=LimitedCache(limit=200000a)
         )
         self.text_parser = parse_text.TextParser(self.stemmer)
 
