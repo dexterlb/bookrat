@@ -1,20 +1,8 @@
 import unittest
 import json
 import os
-from .stem import Stemmer
+from .stem import Stemmer, load_dictionary
 from . import bulgarian_stems
-
-class Word:
-    def __init__(self, text, word_type):
-        self.text = text
-        self.type = word_type
-
-def load_dictionary(filename):
-    with open(filename) as f:
-        for subdictionary in json.load(f):
-            word_type = subdictionary['type']
-            for word in subdictionary['words']:
-                yield Word(word, word_type)
 
 class TestStemmer(unittest.TestCase):
     def test_bulgarian(self):

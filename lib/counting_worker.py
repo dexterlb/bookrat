@@ -26,9 +26,16 @@ class WordCounter(Thread):
         self.stemmer = Stemmer(
             rules_file=os.path.join(
                 os.path.dirname(os.path.realpath(__file__)),
+                'stemmer',
                 'bulgarian_grammar.pl'  # TODO: make this configurable
             ),
-            dictionary=self.megatron.word_controller.get_all()
+            dictionary=load_dictionary(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'stemmer',
+                    'bulgarian_words.json'  # TODO: this as well
+                )
+            )
         )
 
 
