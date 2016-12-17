@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import pycopg2
+import psycopg2
 
 Base = declarative_base()
 class Database:
@@ -57,7 +57,7 @@ class WorkController(Controller):
                 where id not in (select book_id from work);
                 '''
             )
-        except pycopg2.IntegrityError:
+        except psycopg2.IntegrityError:
             print('warning: race condition in update_ids. Probably harmless.')
             pass
 
