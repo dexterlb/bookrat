@@ -4,15 +4,12 @@ male_article("я").
 male_article("ят").
 female_article("та").
 middle_article("то").
-plural_article("те").
 
-article_base(X, C).
+plural_article("те").
 
 article_base(X, A) :- atom_concat(A, B, X), male_article(B), male_noun(A).
 article_base(X, A) :- atom_concat(A, B, X), female_article(B), female_noun(A).
 article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
-
-
 
 % стол-ове
 % чайни/к-ци
@@ -33,10 +30,11 @@ article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
 % бижу-та
 
 male_plural("ове").
+male_plural("eве").
 male_plural("ци").
 male_plural("и").
-male_plural("а").
 male_plural("я").
+male_plural("а").
 male_plural("е").
 
 female_plural("и").
@@ -47,16 +45,16 @@ middle_plural("а").
 middle_plural("я").
 
 plural_base(X, A) :- atom_concat(A, B, X), male_plural(B), male_noun(A).
-plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_base(C).
-plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_base(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_noun(C).
 
 plural_base(X, A) :- atom_concat(A, B, X), female_plural(B), female_noun(A).
-plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "а", C), female_base(C).
-plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "я", C), female_base(C).
+plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "а", C), female_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "я", C), female_noun(C).
 
 plural_base(X, A) :- atom_concat(A, B, X), middle_plural(B), middle_noun(A).
-plural_base(X, C) :- atom_concat(A, B, X), middle_plural(B), atom_concat(A, "о", C), middle_base(C).
-plural_base(X, C) :- atom_concat(A, B, X), middle_plural(B), atom_concat(A, "е", C), middle_base(C).
+plural_base(X, C) :- atom_concat(A, B, X), middle_plural(B), atom_concat(A, "о", C), middle_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), middle_plural(B), atom_concat(A, "е", C), middle_noun(C).
 
 adjective_suffix("на").
 adjective_suffix("а").
@@ -196,10 +194,10 @@ base(X) :- verb(X).
 
 base_of(X, X) :- base(X).
 base_of(X, A) :- article_base(X, A).
+base_of(X, A) :- mix_base(X, A).
 base_of(X, A) :- plural_base(X, A).
 base_of(X, A) :- adjective_base(X, A).
 base_of(X, A) :- verb_base(X, A).
-base_of(X, A) :- mix_base(X, A).
 base_of(X, X).
 
 bases_of(L, R) :- maplist(base_of, L, R).
