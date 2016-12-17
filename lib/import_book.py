@@ -9,8 +9,11 @@ class BookImporter:
     def _parse_from(self, dir):
         files = list(all_in_dir(dir))
         for file in files:
-            book_parser = parse_book.BookParser(file)
-            yield(book_parser.parse())
+            try:
+                book_parser = parse_book.BookParser(file)
+                yield(book_parser.parse())
+            except:
+                print(file + ' was corrupted. Too bad :(')
 
     def import_from(self, dir, progress=None):
         if progress:
