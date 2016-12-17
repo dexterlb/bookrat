@@ -5,7 +5,9 @@ from ..lib import parse_dictionary
 from ..lib import megatron
 from ..lib import counting_worker
 from ..lib import tf_idf
+from ..lib.web import web
 import progressbar
+import os
 
 @click.group()
 def main():
@@ -87,12 +89,23 @@ def precompute(db, dir):
 
     counting_worker.run(m)
 
-    tfidf = tf_idf.TFIDF(m)
+    m.word_book_controller.add_indices()
 
+    tfidf = tf_idf.TFIDF(m)
     tfidf.compute_idf()
+
+    m.tf_idf_controller.add_idf_indices()
+
     tfidf.compute_tfidf()
 
+    m.tf_idf_controller.add_tfidf_indices()
+
     tfidf.compute_top_words()
+
+@click.command(help='serve the server')
+def serve():
+    web.main()
+
 
 
 main.add_command(import_books)
@@ -104,6 +117,7 @@ main.add_command(idf)
 main.add_command(tfidf)
 main.add_command(top)
 main.add_command(precompute)
+main.add_command(serve)
 
 if __name__ == '__main__':
     main()
