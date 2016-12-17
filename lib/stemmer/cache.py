@@ -1,5 +1,8 @@
 from collections import deque
 
+class _Miss:
+    pass
+
 class BulkCall:
     '''BulkCall is constructed using ``pipe_func`` which transforms
     a list of items all at once. Then, when called with an iterator,
@@ -11,12 +14,15 @@ class BulkCall:
     time in the input iterator, the result is retreived from the cache
     instead of being passed to ``pipe_func``. Hence, if using a cache,
     it is assumed that ``pipe_func`` is pure.
+
+    Any words in stop_words are skipped (and replaced by None)
     '''
 
-    def __init__(self, pipe_func, at_once=1000, cache=None):
+    def __init__(self, pipe_func, at_once=1000, cache=None, stop_words=set()):
         self.pipe_func = pipe_func
         self.cache = cache
         self.at_once = at_once
+        self.stop_words = stop_words
 
     def __call__(self, iterator):
         iterator = iter(iterator)
@@ -26,10 +32,12 @@ class BulkCall:
         while True:
             try:
                 item = next(iterator)
-                if self.cache and item in self.cache:
+                if item in self.stop_words:
+                    hits.appendleft(None)
+                elif self.cache and item in self.cache:
                     hits.appendleft(self.cache[item])
                 else:
-                    hits.appendleft(None)
+                    hits.appendleft(_Miss)
                     misses.appendleft(item)
 
             except StopIteration:
@@ -42,7 +50,7 @@ class BulkCall:
                 while hits:
                     result = hits.pop()
 
-                    if result is not None:
+                    if result is not _Miss:
                         yield result
                     else:
                         result = results.pop()

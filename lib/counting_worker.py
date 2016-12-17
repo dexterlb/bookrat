@@ -4,22 +4,34 @@ import time
 import random
 import os
 
-from .stemmer import Stemmer
+from .stemmer import Stemmer, load_dictionary, load_stop_words
 from . import parse_text
+from .stemmer.cache import LimitedCache
 from . import database
+from .ctrlc import CtrlC
 
 class BookGetter(Thread):
-    def __init__(self, input_books, megatron):
+    def __init__(self, input_books, megatron, book_id):
         super(BookGetter, self).__init__()
         self.input_books = input_books
         self.megatron = megatron
+        self.book_id = book_id
 
     def run(self):
-        for book in self.megatron.work_controller.yield_book():
-            self.input_books.put(book)
-            print("+ Taking from databae: " + book.title)
-        self.input_books.put(None)
-        print("+ Took all.")
+        if self.book_id:
+            book = self.megatron.work_controller.get_by_id(self.book_id)
+            if book:
+                self.input_books.put(book)
+                print("Took book.")
+            self.input_books.put(None)
+        else:
+            for book in self.megatron.work_controller.yield_book():
+                if CtrlC.pressed:
+                    break
+                self.input_books.put(book)
+                print("+ Taking from database: " + book.title)
+            self.input_books.put(None)
+            print("+ Took all.")
 
 class WordCounter(Thread):
     def __init__(self, input_books, output_books, megatron):
@@ -38,14 +50,21 @@ class WordCounter(Thread):
                     'stemmer',
                     'bulgarian_words.json'  # TODO: this as well
                 )
-            )
+            ),
+            stop_words = load_stop_words(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'stemmer',
+                    'bulgarian_stop_words'  # TODO: this as well
+                )
+            ),
+            cache=LimitedCache(limit=200000)
         )
         self.text_parser = parse_text.TextParser(self.stemmer)
 
     def run(self):
         book = self.input_books.get()
         while book:
-            print("Word counter taking book")
             counted_words = self.text_parser.count_stemmed_words(book)
             self.output_books.put((book, counted_words))
             print("- Finished with book: " + book.title)
@@ -77,12 +96,12 @@ class ResultSetter(Thread):
                 break
 
 
-def run(megatron):
+def run(megatron, book_id=None):
     megatron.work_controller.update_ids()
     input_books = Queue(maxsize=1)
     output_books = Queue(maxsize=1)
 
-    book_getter = BookGetter(input_books, megatron)
+    book_getter = BookGetter(input_books, megatron, book_id)
     word_counter = WordCounter(input_books, output_books, megatron)
     result_setter = ResultSetter(output_books, megatron)
 

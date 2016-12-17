@@ -1,8 +1,10 @@
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Numeric, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Float, ForeignKey, Text, ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+import psycopg2
 
 Base = declarative_base()
 class Database:
@@ -10,7 +12,7 @@ class Database:
         self.engine = create_engine(url)
         self.make_session = sessionmaker()
         self.make_session.configure(bind=self.engine)
-        
+
     def create_database(self):
         Base.metadata.create_all(self.engine)
 
@@ -44,15 +46,20 @@ class WordController(Controller):
         session.commit()
         return words
 
+
 class WorkController(Controller):
     def update_ids(self):
-        self.database.engine.execute(
-            '''
-            insert into work(book_id, taken, finished)
-            select id, false, false from book
-            where id not in (select book_id from work);
-            '''
-        )
+        try:
+            self.database.engine.execute(
+                '''
+                insert into work(book_id, taken, finished)
+                select id, false, false from book
+                where id not in (select book_id from work);
+                '''
+            )
+        except:
+            print('warning: race condition in update_ids. Probably harmless.')
+            pass
 
     def get_all(self):
         works = []
@@ -91,6 +98,22 @@ class WorkController(Controller):
         else:
             return None
 
+    def get_by_id(self, book_id):
+        record = self.database.engine.execute(
+        '''
+            update work set taken=true
+            where book_id = {} returning book_id;'''.format(book_id)
+        ).first()
+
+        if record:
+            book_id = record[0]
+            session = self.make_session()
+            book = session.query(Book).filter(Book.id == book_id).first()
+            return book
+        else:
+            return None
+
+        book = session.query(Book).filter(Book.id == book_id).first()
 
 class BookController(Controller):
     def get_all(self):
@@ -101,18 +124,58 @@ class BookController(Controller):
         session.commit()
         return books
 
-class WordBookController(Controller):
-    def add(self, word, book_id):
-        session = self.make_session()
-        counters = session.query(WordBook).filter(WordBook.book_id == book_id, WordBook.word_id == word_id).all()
-        if len(counters) > 1:
-            print("Too many")
-        if len(counters) == 0:
-            session.add(WordBook(word = word, book_id=book_id, count=1))
-        else:
-            counters[0].count += 1        
-        session.commit()
 
+class TfIdfController(Controller):
+    def compute_idf(self):
+        self.database.engine.execute(
+            '''
+            insert into idf(word, idf_score)
+            select word, log(1 + (select count(*) from book) :: float / count(book_id)) as idf_score
+            from wordbook group by word;
+            '''
+        )
+
+    def compute_tfidf(self):
+        self.database.engine.execute(
+            '''
+            insert into tfidf(book_id, word, tfidf_score)
+            select book_id, wordbook.word as word,
+            ((0.5 + 0.5 * (count :: float / t.mc)) * (idf.idf_score) ) as tfidf_score
+            from wordbook
+            join
+                (select book_id as bid, max(count) as mc
+                 from wordbook group by book_id
+                ) as t on t.bid = book_id
+            join idf on wordbook.word = idf.word;
+            '''
+        )
+
+    def add_idf_indices(self):
+        self.database.engine.execute(
+            '''
+            create index idf_word on idf(word);
+            '''
+        )
+
+    def add_tfidf_indices(self):
+         self.database.engine.execute(
+            '''
+            create index tfidf_word_index on tfidf(word);
+            create index tfidf_score_index on tfidf(tfidf_score);
+            '''
+    )
+
+    def compute_top_words(self):
+        self.database.engine.execute(
+            '''
+            insert into topwords(book_id, words)
+            select b.id as book_id,
+            array(select word from tfidf where book_id = b.id
+            order by tfidf_score desc limit 75) as words from book as b;
+            '''
+        )
+
+class WordBookController(Controller):
     def get_all(self):
         counters = []
         session = self.make_session()
@@ -120,6 +183,15 @@ class WordBookController(Controller):
             counters.append(counter)
         session.commit()
         return counters
+
+    def add_indices(self):
+        self.database.engine.execute(
+            '''
+            create index word_index on wordbook(word);
+            create index book_id_index on wordbook(book_id);
+            '''
+        )
+
 
 class Word(Base):
     __tablename__ = 'word'
@@ -139,6 +211,31 @@ class Work(Base):
     def __repr__(self):
        return "<Work(book_id='%s', taken='%s', finished='%s')>" % (
                             self.book_id, self.taken, self.finished)
+
+class Idf(Base):
+    __tablename__ = 'idf'
+    word = Column(String, primary_key=True)
+    idf_score = Column(Float)
+    def __repr__(self):
+       return "<idf(word='%s', idf_score='%s')>" % (
+        self.word, self.idf_score)
+
+class Tfidf(Base):
+    __tablename__ = 'tfidf'
+    book_id = Column(Integer, primary_key=True)
+    word = Column(String, primary_key=True)
+    tfidf_score = Column(Float)
+    def __repr__(self):
+       return "<tfidf(book_id='%s', word='%s', tfidf_score='%s')>" % (
+        self.book_id, self.word, self.tfidf_score)
+
+class TopWords(Base):
+    __tablename__ = 'topwords'
+    book_id = Column(Integer, primary_key=True)
+    words = Column(ARRAY(String))
+    def __repr__(self):
+       return "<topwords(book_id='%s', words='%s' )>" % (
+        self.book_id, self.word, self.tfidf_score)
 
 
 class Book(Base):
@@ -164,3 +261,5 @@ class WordBook(Base):
     def __repr__(self):
         return "<WordBook(book_id='%s', word='%s', count='%s')>" % (
                             self.book_id, self.word, self.count)
+
+
