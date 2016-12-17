@@ -25,6 +25,7 @@ def import_books(db, dir):
 
 @click.command(help='import books from a folder')
 @click.option('--db', help='database URN', required=True)
+@click.argument('ignored')
 def count(db):
     m = megatron.Megatron(db)
     counting_worker.run(m)
