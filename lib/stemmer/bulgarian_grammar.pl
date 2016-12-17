@@ -12,8 +12,10 @@ article_base(X, A) :- atom_concat(A, B, X), female_article(B), female_noun(A).
 article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
 
 % стол-ове
+% бро/й - еве
 % чайни/к-ци
 % учител-и
+% бинок/ъл - ли
 % стол-а
 % кон-я
 % кон-е
@@ -31,6 +33,7 @@ article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
 
 male_plural("ове").
 male_plural("eве").
+male_plural("ли").
 male_plural("ци").
 male_plural("и").
 male_plural("я").
@@ -47,6 +50,7 @@ middle_plural("я").
 plural_base(X, A) :- atom_concat(A, B, X), male_plural(B), male_noun(A).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_noun(C).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "ъл", C), male_noun(C).
 
 plural_base(X, A) :- atom_concat(A, B, X), female_plural(B), female_noun(A).
 plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "а", C), female_noun(C).
