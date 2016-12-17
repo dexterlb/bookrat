@@ -1,24 +1,75 @@
-article("а").
-article("ът").
-article("я").
-article("ят").
-article("та").
-article("то").
-article("те").
+male_article("а").
+male_article("ът").
+male_article("я").
+male_article("ят").
+female_article("та").
+middle_article("то").
+plural_article("те").
 
-plural("и").
-plural("ове").
-plural("а").
-plural("ци").
-plural("ета").
-plural("я").
+article_base(X, C).
 
-adjective("на").
-adjective("а").
-adjective("но").
-adjective("о").
-adjective("ни").
-adjective("и").
+article_base(X, A) :- atom_concat(A, B, X), male_article(B), male_noun(A).
+article_base(X, A) :- atom_concat(A, B, X), female_article(B), female_noun(A).
+article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
+
+
+
+% стол-ове
+% чайни/к-ци
+% учител-и
+% стол-а
+% кон-я
+% кон-е
+% стади/й-и
+
+
+% вкаменелост-и
+% мас/а-и
+% бирари/я -и
+
+% дърв/о-ета
+% цвет/е-я
+% дърв/о-а
+% бижу-та
+
+male_plural("ове").
+male_plural("ци").
+male_plural("и").
+male_plural("а").
+male_plural("я").
+male_plural("е").
+
+female_plural("и").
+
+middle_plural("ета").
+middle_plural("та").
+middle_plural("а").
+middle_plural("я").
+
+plural_base(X, A) :- atom_concat(A, B, X), male_plural(B), male_noun(A).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_base(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_base(C).
+
+plural_base(X, A) :- atom_concat(A, B, X), female_plural(B), female_noun(A).
+plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "а", C), female_base(C).
+plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "я", C), female_base(C).
+
+plural_base(X, A) :- atom_concat(A, B, X), middle_plural(B), middle_noun(A).
+plural_base(X, C) :- atom_concat(A, B, X), middle_plural(B), atom_concat(A, "о", C), middle_base(C).
+plural_base(X, C) :- atom_concat(A, B, X), middle_plural(B), atom_concat(A, "е", C), middle_base(C).
+
+adjective_suffix("на").
+adjective_suffix("а").
+adjective_suffix("но").
+adjective_suffix("о").
+adjective_suffix("ни").
+adjective_suffix("и").
+
+adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), adjective(A).
+adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), pronoun(A).
+adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), adjective(C).
+adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), pronoun(C).
+
 
 present_tense("иш").
 present_tense("и").
@@ -111,52 +162,37 @@ past_undefied_tense("шла").
 past_undefied_tense("шло").
 past_undefied_tense("шли").
 
-article_base(X, A) :- atom_concat(A, B, X), article(B), base(A).
+verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "я", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "я", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "я", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "я", C), verb(C).
 
-plural_base(X, A) :- atom_concat(A, B, X), plural(B), base(A).
-plural_base(X, C) :- atom_concat(A, B, X), plural(B), atom_concat(A, "а", C), base(C).
-plural_base(X, C) :- atom_concat(A, B, X), plural(B), atom_concat(A, "о", C), base(C).
-plural_base(X, C) :- atom_concat(A, B, X), plural(B), atom_concat(A, "к", C), base(C).
-plural_base(X, C) :- atom_concat(A, B, X), plural(B), atom_concat(A, "е", C), base(C).
-plural_base(X, C) :- atom_concat(A, B, X), plural(B), atom_concat(A, "й", C), base(C).
-plural_base(X, C) :- atom_concat(A, B, X), plural(B), atom_concat(A, "я", C), base(C).
+verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "а", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "а", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "а", C), verb(C).
 
-adjective_base(X, A) :- atom_concat(A, B, X), adjective(B), base(A).
-adjective_base(X, C) :- atom_concat(A, B, X), adjective(B), atom_concat(A, "ен", C), base(C).
+verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "ам", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "ам", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "ам", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ам", C), verb(C).
 
-verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "я", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "я", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "я", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "я", C), base(C).
+verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "ям", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "ям", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "ям", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ям", C), verb(C).
 
-verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "а", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "а", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "а", C), base(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "та", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ша", C), verb(C).
+verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "вам", C), verb(C).
 
-verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "ам", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "ам", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "ам", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ам", C), base(C).
-
-verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "ям", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "ям", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "ям", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ям", C), base(C).
-
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "та", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ша", C), base(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "вам", C), base(C).
+mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), plural_base(A, C). 
 
 base_of(X, X) :- base(X).
-
 base_of(X, A) :- article_base(X, A).
 base_of(X, A) :- plural_base(X, A).
 base_of(X, A) :- adjective_base(X, A).
 base_of(X, A) :- verb_base(X, A).
-
-base_of(X, C) :- atom_concat(A, B, X), article(B), plural_base(A, C). 
-base_of(X, A) :- atom_concat(A, B, X), article(B), verb_base(A, C). 
-
+base_of(X, A) :- mix_base(X, A).
 base_of(X, X).
 
 bases_of(L, R) :- maplist(base_of, L, R).
