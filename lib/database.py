@@ -44,6 +44,7 @@ class WordController(Controller):
         session.commit()
         return words
 
+
 class WorkController(Controller):
     def update_ids(self):
         self.database.engine.execute(
@@ -126,6 +127,21 @@ class TfIdfController(Controller):
             '''
         )
 
+    def add_idf_indices(self):
+        self.database.engine.execute(
+            '''
+            create index idf_word on idf(word);
+            '''
+        )
+
+    def add_tfidf_indices(self):
+         self.database.engine.execute(
+            '''
+            create index tfidf_word_index on tfidf(word);
+            create index tfidf_score_index on tfidf(tfidf_score);
+            '''
+    )
+
     def compute_top_words(self):
         self.database.engine.execute(
             '''
@@ -145,6 +161,14 @@ class WordBookController(Controller):
         session.commit()
         return counters
 
+    def add_indices(self):
+        self.database.engine.execute(
+            '''
+            create index word_index on wordbook(word);
+            create index book_id_index on wordbook(book_id); 
+            '''
+        )
+
 
 class Word(Base):
     __tablename__ = 'word'
@@ -159,8 +183,8 @@ class Word(Base):
 class Work(Base):
     __tablename__ = 'work'
     book_id = Column(Integer, primary_key=True)
-    taken = Column(Boolean, index=True)
-    finished = Column(Boolean, index=True)
+    taken = Column(Boolean)
+    finished = Column(Boolean)
     def __repr__(self):
        return "<Work(book_id='%s', taken='%s', finished='%s')>" % (
                             self.book_id, self.taken, self.finished)
@@ -175,9 +199,9 @@ class Idf(Base):
 
 class Tfidf(Base):
     __tablename__ = 'tfidf'
-    book_id = Column(Integer, primary_key=True, index=True)
-    word = Column(String, primary_key=True, index=True)
-    tfidf_score = Column(Float, index=True)
+    book_id = Column(Integer, primary_key=True)
+    word = Column(String, primary_key=True)
+    tfidf_score = Column(Float)
     def __repr__(self):
        return "<tfidf(book_id='%s', word='%s', tfidf_score='%s')>" % (
         self.book_id, self.word, self.tfidf_score)
@@ -208,8 +232,8 @@ class Book(Base):
 class WordBook(Base):
     __tablename__ = 'wordbook'
     id = Column(Integer, primary_key=True)
-    book_id = Column(Integer, ForeignKey("book.id"), nullable=False, index=True)
-    word = Column(String, nullable=False, index=True)
+    book_id = Column(Integer, ForeignKey("book.id"), nullable=False)
+    word = Column(String, nullable=False)
     count = Column(Integer)
     def __repr__(self):
         return "<WordBook(book_id='%s', word='%s', count='%s')>" % (
