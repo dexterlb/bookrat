@@ -27,6 +27,8 @@ def import_books(db, dir):
 @click.option('--db', help='database URN', required=True)
 @click.argument('book_id', required=False)
 def count(db, book_id):
+    if book_id == 'none':
+        book_id = None
     m = megatron.Megatron(db)
     counting_worker.run(m, book_id)
 
