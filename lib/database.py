@@ -72,6 +72,7 @@ class WorkController(Controller):
                 break
 
     def lock_book(self):
+        print("trying to take book")
         record = self.database.engine.execute(
             '''
             update work set taken=true
@@ -83,6 +84,7 @@ class WorkController(Controller):
             returning book_id;
             '''
         ).first()
+        print("took book")
         if record:
             book_id = record[0]
             session = self.make_session()
@@ -102,13 +104,13 @@ class BookController(Controller):
         return books
 
 class WordBookController(Controller):
-    def add(self, word_id, book_id):
+    def add(self, word, book_id):
         session = self.make_session()
         counters = session.query(WordBook).filter(WordBook.book_id == book_id, WordBook.word_id == word_id).all()
         if len(counters) > 1:
             print("Too many")
         if len(counters) == 0:
-            session.add(WordBook(word_id=word_id, book_id=book_id, count=1))
+            session.add(WordBook(word = word, book_id=book_id, count=1))
         else:
             counters[0].count += 1        
         session.commit()
@@ -159,8 +161,8 @@ class WordBook(Base):
     __tablename__ = 'wordbook'
     id = Column(Integer, primary_key=True)
     book_id = Column(Integer, ForeignKey("book.id"), nullable=False)
-    word_id = Column(Integer, ForeignKey("word.id"), nullable=False)
+    word = Column(String, nullable=False)
     count = Column(Integer)
     def __repr__(self):
-        return "<WordBook(book_id='%s', word_id='%s', count='%s')>" % (
-                            self.book_id, self.word_id, self.count)
+        return "<WordBook(book_id='%s', word='%s', count='%s')>" % (
+                            self.book_id, self.word, self.count)

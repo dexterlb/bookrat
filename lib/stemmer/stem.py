@@ -32,7 +32,9 @@ class Stemmer:
     def stem_multi(self, words):
         try:
             encoded_words = ', '.join((encode(word) for word in words))
+            print("stemmer: getting next")
             result = next(self.query('bases_of([' + encoded_words + '], X)'))
+            print("stemmer: done")
             return [decode(atom.value) for atom in result['X']]
         except Exception as exc:
             raise Exception(
