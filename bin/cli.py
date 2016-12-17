@@ -25,9 +25,10 @@ def import_books(db, dir):
 
 @click.command(help='import books from a folder')
 @click.option('--db', help='database URN', required=True)
-def count(db):
+@click.argument('book_id', required=False)
+def count(db, book_id):
     m = megatron.Megatron(db)
-    counting_worker.run(m)
+    counting_worker.run(m, book_id)
 
 
 @click.command(help='import words from json dictionary file')
@@ -75,7 +76,7 @@ def top(db):
     tfidf = tf_idf.TFIDF(m)
     tfidf.compute_top_words()
 
-@click.command(help='compute idf')
+@click.command(help='precompute all the info')
 @click.option('--db', help='database URN', required=True)
 @click.argument('dir')
 def precompute(db, dir):
@@ -88,6 +89,28 @@ def precompute(db, dir):
     importer.import_from(dir, progress)
 
     counting_worker.run(m)
+
+    m.word_book_controller.add_indices()
+
+    tfidf = tf_idf.TFIDF(m)
+    tfidf.compute_idf()
+
+    m.tf_idf_controller.add_idf_indices()
+
+    tfidf.compute_tfidf()
+
+    m.tf_idf_controller.add_tfidf_indices()
+
+    tfidf.compute_top_words()
+
+
+@click.command(help='precompute just one book')
+@click.option('--db', help='database URN', required=True)
+@click.argument('book_id')
+def precompute_one(db, book_id):
+    m = megatron.Megatron(db)
+
+    counting_worker.run(m, book_id)
 
     m.word_book_controller.add_indices()
 
@@ -117,6 +140,7 @@ main.add_command(idf)
 main.add_command(tfidf)
 main.add_command(top)
 main.add_command(precompute)
+main.add_command(precompute_one)
 main.add_command(serve)
 
 if __name__ == '__main__':
