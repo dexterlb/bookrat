@@ -10,6 +10,8 @@ def get(url):
         return response.read()
 
 def get_picture(url):
+    '''Get picture from chitanka.com thumbnails'''
+
     the_page = get(url)
     soup = BeautifulSoup(the_page, 'html.parser')
 
@@ -18,5 +20,8 @@ def get_picture(url):
     return re.sub(r'(.*)200(.jpg)$', r'http:\1max\2', src)
 
 def base64_picture(url):
-    img = get_picture(url)
-    return b64encode(get(img))
+    try:
+        img = get_picture(url)
+        return b64encode(get(img))
+    except:
+        return None # evil.

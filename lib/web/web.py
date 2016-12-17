@@ -13,14 +13,13 @@ from . import get_pic
 class StringGenerator(object):
     @cherrypy.expose
     def index(self):
-        return """<html>
-          <head>
-            <link href="/static/css/style.css" rel="stylesheet">
-          </head>
-          <body>
-          wrong page
-          </body>
-        </html>"""
+        with open(os.path.join(
+            os.path.abspath(os.path.dirname(os.path.realpath(__file__))),
+            'web',
+            'index.html'
+            )) as f:
+
+            return f.read()
 
     @cherrypy.expose
     def get_picture(self, url=""):
