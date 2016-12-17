@@ -72,7 +72,6 @@ class WorkController(Controller):
                 break
 
     def lock_book(self):
-        print("trying to take book")
         record = self.database.engine.execute(
             '''
             update work set taken=true
@@ -84,7 +83,6 @@ class WorkController(Controller):
             returning book_id;
             '''
         ).first()
-        print("took book")
         if record:
             book_id = record[0]
             session = self.make_session()

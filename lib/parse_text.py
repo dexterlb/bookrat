@@ -1,6 +1,7 @@
 import regex
 import json
 from collections import defaultdict
+import time
 
 class TextParser:
 	def __init__(self, stemmer):
@@ -15,16 +16,11 @@ class TextParser:
 		print("counting stemmed words")
 		counted_words = defaultdict(int)
 		for word in words:
-			print("counting")
 			counted_words[word] += 1
 		return dict(counted_words)
 
 	def count_stemmed_words(self, book):
-
-		words_in_book = list(self.split_text(book.text))
-		with open("foo.txt", "w") as f:
-			json.dump(words_in_book, f)
-		print("prepare to stem")
-		stemmed = list(self.stemmer(words_in_book))
-		print("stemmed!")
+		started = time.time()
+		stemmed = list(self.stemmer(self.split_text(book.text)))
+		print("stemmed in: " + str(time.time()-started))
 		return self.count_words(stemmed)
