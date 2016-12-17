@@ -2,6 +2,7 @@ male_article("а").
 male_article("ът").
 male_article("я").
 male_article("ят").
+male_article("то").
 female_article("та").
 middle_article("то").
 
