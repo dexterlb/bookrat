@@ -2,8 +2,11 @@ from threading import Thread
 from queue import Queue
 import time
 import random
+import os
 
 from .stemmer import Stemmer
+from . import parse_text
+from . import database
 
 class BookGetter(Thread):
     def __init__(self, input_books, megatron):
@@ -37,15 +40,17 @@ class WordCounter(Thread):
                 )
             )
         )
-
+        self.text_parser = parse_text.TextParser(self.stemmer)
 
     def run(self):
         book = self.input_books.get()
         while book:
-            time.sleep(random.randint(1, 10)/10)
-            print("- Finished with: " + book.title)
+            print("Word counter taking book")
+            counted_words = self.text_parser.count_stemmed_words(book)
+            self.output_books.put((book, counted_words))
+            print("- Finished with book: " + book.title)
             book = self.input_books.get()
-        print("- Finished with all.")
+        self.output_books.put(None)
 
 class ResultSetter(Thread):
     def __init__(self, output_books, megatron):
@@ -53,10 +58,27 @@ class ResultSetter(Thread):
         self.output_books = output_books
         self.megatron = megatron
 
+    def yield_from_book(self, counted_book):
+        book, words = counted_book
+        for word, count in words.items():
+            yield database.WordBook(book_id=book.id, word=word, count=count)
+
+
     def run(self):
-        pass
+        while True:
+            counted_book = self.output_books.get()
+            if counted_book:
+                started = time.time()
+                self.megatron.word_book_controller.add_many(
+                    self.yield_from_book(counted_book)
+                )
+                print("pushed into db in: " + str(time.time() - started))
+            else:
+                break
+
 
 def run(megatron):
+    megatron.work_controller.update_ids()
     input_books = Queue(maxsize=1)
     output_books = Queue(maxsize=1)
 
@@ -65,9 +87,8 @@ def run(megatron):
     result_setter = ResultSetter(output_books, megatron)
 
     book_getter.start()
-    word_counter.start()
     result_setter.start()
+    word_counter.run()
 
     book_getter.join()
-    word_counter.join()
     result_setter.join()
