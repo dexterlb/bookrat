@@ -1,4 +1,5 @@
 import re
+import json
 from pyswip import Prolog
 from tempfile import mkdtemp
 import os
@@ -88,10 +89,35 @@ def encode_match(match):
     text, = match.groups()
     return encode(text)
 
-if __name__ == '__main__':
-    s = Stemmer()
 
-    words = ['конят', 'столът'] * 45000
+class Word:
+    def __init__(self, text, word_type):
+        self.text = text
+        self.type = word_type
+
+def load_dictionary(filename):
+    with open(filename) as f:
+        for subdictionary in json.load(f):
+            word_type = subdictionary['type']
+            for word in subdictionary['words']:
+                yield Word(word, word_type)
+
+if __name__ == '__main__':
+    s = Stemmer(
+        os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'bulgarian_grammar.pl'
+        ),
+        load_dictionary(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                'bulgarian_words.json'
+            )
+        )
+    )
+
+    with open('/tmp/foo.txt') as f:
+        words = json.load(f)
 
     start = time.time()
     result = list(s(words))
