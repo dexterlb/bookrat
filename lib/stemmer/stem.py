@@ -7,7 +7,7 @@ import shutil
 from itertools import islice
 import time
 
-from . import cache
+from .cache import BulkCall
 
 class Stemmer:
     def __init__(self, rules_file, dictionary=[], cache=None):
@@ -17,7 +17,7 @@ class Stemmer:
 
         # it appears that prolog is fastest when processing about 1000
         # words at a time
-        self.stem_iter = cache.BulkCall(self.stem_multi, at_once=1000)
+        self.stem_iter = BulkCall(self.stem_multi, at_once=1000, cache=cache)
 
     def __call__(self, words):
         return self.stem_iter(words)
