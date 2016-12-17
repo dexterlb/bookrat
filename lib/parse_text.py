@@ -21,6 +21,6 @@ class TextParser:
 
 	def count_stemmed_words(self, book):
 		started = time.time()
-		stemmed = list(self.stemmer(self.split_text(book.text)))
+		stemmed = [w for w in self.stemmer(self.split_text(book.text)) if w]
 		print("stemmed in: " + str(time.time()-started))
 		return self.count_words(stemmed)

@@ -4,7 +4,7 @@ import time
 import random
 import os
 
-from .stemmer import Stemmer, load_dictionary
+from .stemmer import Stemmer, load_dictionary, load_stop_words
 from . import parse_text
 from .stemmer.cache import LimitedCache
 from . import database
@@ -40,7 +40,14 @@ class WordCounter(Thread):
                     'bulgarian_words.json'  # TODO: this as well
                 )
             ),
-            cache=LimitedCache(limit=200000a)
+            stop_words = load_stop_words(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    'stemmer',
+                    'bulgarian_stop_words'  # TODO: this as well
+                )
+            ),
+            cache=LimitedCache(limit=200000)
         )
         self.text_parser = parse_text.TextParser(self.stemmer)
 
