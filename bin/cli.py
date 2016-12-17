@@ -73,6 +73,27 @@ def top(db):
     tfidf = tf_idf.TFIDF(m)
     tfidf.compute_top_words()
 
+@click.command(help='compute idf')
+@click.option('--db', help='database URN', required=True)
+@click.argument('dir')
+def precompute(db, dir):
+    m = megatron.Megatron(db)
+    m.database.drop_all()
+    m.database.create_database()
+
+    importer = import_book.BookImporter(m)
+    progress = progressbar.ProgressBar()
+    importer.import_from(dir, progress)
+
+    counting_worker.run(m)
+
+    tfidf = tf_idf.TFIDF(m)
+
+    tfidf.compute_idf()
+    tfidf.compute_tfidf()
+
+    tfidf.compute_top_words()
+
 
 main.add_command(import_books)
 main.add_command(parse_dict)
@@ -82,6 +103,7 @@ main.add_command(count)
 main.add_command(idf)
 main.add_command(tfidf)
 main.add_command(top)
+main.add_command(precompute)
 
 if __name__ == '__main__':
     main()

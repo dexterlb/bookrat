@@ -105,9 +105,9 @@ class TfIdfController(Controller):
     def compute_idf(self):
         self.database.engine.execute(
             '''
-            insert into work(book_id, taken, finished)
-            select id, false, false from book
-            where id not in (select book_id from work);
+            insert into idf(word, idf_score)
+            select word, log(1 + (select count(*) from book) :: float / count(book_id)) as idf_score
+            from wordbook group by word;
             '''
         )
 
@@ -175,8 +175,8 @@ class Idf(Base):
 
 class Tfidf(Base):
     __tablename__ = 'tfidf'
-    book_id = Column(Integer, primary_key=True)
-    word = Column(String, primary_key=True)
+    book_id = Column(Integer, primary_key=True, index=True)
+    word = Column(String, primary_key=True, index=True)
     tfidf_score = Column(Float)
     def __repr__(self):
        return "<tfidf(book_id='%s', word='%s', tfidf_score='%s')>" % (
@@ -185,7 +185,7 @@ class Tfidf(Base):
 class TopWords(Base):
     __tablename__ = 'topwords'
     book_id = Column(Integer, primary_key=True)
-    words = Column(ARRAY(String), primary_key=True)
+    words = Column(ARRAY(String))
     def __repr__(self):
        return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)
