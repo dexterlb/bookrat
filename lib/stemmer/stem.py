@@ -9,14 +9,14 @@ import time
 import cache
 
 class Stemmer:
-    def __init__(self, rules_file='bulgarian.pl', dict_file='bulgarian_words'):
+    def __init__(self, rules_file, dictionary=[], cache=None):
         self.prolog = Prolog()
         self.read_prolog(rules_file)
-        self.read_dictionary(dict_file)
+        self.load_dictionary(dictionary)
 
         # it appears that prolog is fastest when processing about 1000
         # words at a time
-        self.stem_iter = cache.BulkCall(self.stem_multi, at_once=1000, cache=None)
+        self.stem_iter = cache.BulkCall(self.stem_multi, at_once=1000)
 
     def __call__(self, words):
         return self.stem_iter(words)
@@ -42,13 +42,12 @@ class Stemmer:
             )
 
 
-    def read_dictionary(self, dictionary_file):
-        with open(dictionary_file, 'r') as f:
-            for line in f:
-                self.add_base_word(line.strip())
+    def load_dictionary(self, dictionary):
+        for word in dictionary:
+            self.add_base_word(word.text. word.type)
 
-    def add_base_word(self, word):
-        self.prolog.assertz("base(" + encode(word) + ")")
+    def add_base_word(self, text, word_type):
+        self.prolog.assertz(word_type + "(" + encode(text) + ")")
 
     def read_prolog(self, source_file):
         with open(source_file, 'r') as f:

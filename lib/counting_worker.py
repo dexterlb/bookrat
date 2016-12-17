@@ -3,7 +3,9 @@ from queue import Queue
 import time
 import random
 
-class BookGetter(Thread):   
+from .stemmer import Stemmer
+
+class BookGetter(Thread):
     def __init__(self, input_books, megatron):
         super(BookGetter, self).__init__()
         self.input_books = input_books
@@ -21,7 +23,15 @@ class WordCounter(Thread):
         super(WordCounter, self).__init__()
         self.input_books, self.output_books = input_books, output_books
         self.megatron = megatron
-    
+        self.stemmer = Stemmer(
+            rules_file=os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                'bulgarian_grammar.pl'  # TODO: make this configurable
+            ),
+            dictionary=self.megatron.word_controller.get_all()
+        )
+
+
     def run(self):
         book = self.input_books.get()
         while book:
@@ -30,12 +40,12 @@ class WordCounter(Thread):
             book = self.input_books.get()
         print("- Finished with all.")
 
-class ResultSetter(Thread): 
+class ResultSetter(Thread):
     def __init__(self, output_books, megatron):
         super(ResultSetter, self).__init__()
         self.output_books = output_books
         self.megatron = megatron
-    
+
     def run(self):
         pass
 
