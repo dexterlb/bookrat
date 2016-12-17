@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Numeric, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, Float, ForeignKey, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -102,12 +102,27 @@ class BookController(Controller):
         return books
 
 class TfIdfController(Controller):
-    def compute_idf():
+    def compute_idf(self):
         self.database.engine.execute(
             '''
             insert into work(book_id, taken, finished)
             select id, false, false from book
             where id not in (select book_id from work);
+            '''
+        )
+
+    def compute_tfidf(self):
+        self.database.engine.execute(
+            '''
+            insert into tfidf(book_id, word, tfidf_score)
+            select book_id, wordbook.word as word,
+            ((0.5 + 0.5 * (count :: float / t.mc)) * (idf.idf_score) ) as tfidf_score
+            from wordbook
+            join 
+                (select book_id as bid, max(count) as mc
+                 from wordbook group by book_id
+                ) as t on t.bid = book_id
+            join idf on wordbook.word = idf.word;
             '''
         )
 
@@ -131,15 +146,6 @@ class WordBookController(Controller):
         session.commit()
         return counters
 
-    def compute_idf(self):
-        self.database.engine.execute(
-            '''
-            insert into idf(word, idf_score)
-            select word, 
-            log(1 + (select count(*) from book) :: float / count(book_id)) as idf_score
-            from wordbook group by word;
-            '''
-        )
 
 class Word(Base):
     __tablename__ = 'word'
@@ -167,6 +173,15 @@ class Idf(Base):
     def __repr__(self):
        return "<idf(word='%s', idf_score='%s')>" % (
         self.word, self.idf_score)
+
+class Tfidf(Base):
+    __tablename__ = 'tfidf'
+    book_id = Column(Integer, primary_key=True)
+    word = Column(String, primary_key=True)
+    tfidf_score = Column(Float)
+    def __repr__(self):
+       return "<tfidf(book_id='%s', word='%s', tfidf_score='%s')>" % (
+        self.book_id, self.word, self.tfidf_score)
 
 
 class Book(Base):

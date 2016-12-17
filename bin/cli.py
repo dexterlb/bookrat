@@ -59,12 +59,21 @@ def idf(db):
     tfidf = tf_idf.TFIDF(m)
     tfidf.compute_idf()
 
+@click.command(help='compute idf')
+@click.option('--db', help='database URN', required=True)
+def tfidf(db):
+    m = megatron.Megatron(db)
+    tfidf = tf_idf.TFIDF(m)
+    tfidf.compute_tfidf()
+
+
 main.add_command(import_books)
 main.add_command(parse_dict)
 main.add_command(createdb)
 main.add_command(dropdb)
 main.add_command(count)
 main.add_command(idf)
+main.add_command(tfidf)
 
 if __name__ == '__main__':
     main()

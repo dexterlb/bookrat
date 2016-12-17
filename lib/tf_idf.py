@@ -1,9 +1,12 @@
 from . import megatron
 
-class TFIFD:
+class TFIDF:
 	def __init__(self, megatron):
 		self.megatron = megatron
 
 
 	def compute_idf(self):
-		self.megatron.idf_controller.compute_idf()
+		self.megatron.tf_idf_controller.compute_idf()
+
+	def compute_tfidf(self):
+		self.megatron.tf_idf_controller.compute_tfidf()
