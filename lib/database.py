@@ -30,6 +30,8 @@ class Controller:
         session = self.database.make_session()
         session.add(item)
         session.commit()
+        print(item.id)
+        return item.id 
 
     def add_many(self, items):
         session = self.database.make_session()
@@ -126,6 +128,17 @@ class BookController(Controller):
 
 
 class TfIdfController(Controller):
+    def create_tables(self):
+        Idf.__table__.create(self.database.engine)
+        Tfidf.__table__.create(self.database.engine) 
+        TopWords.__table__.create(self.database.engine) 
+
+
+    def drop_tables(self):
+        Idf.__table__.drop(self.database.engine)
+        Tfidf.__table__.drop(self.database.engine) 
+        TopWords.__table__.drop(self.database.engine) 
+
     def compute_idf(self):
         self.database.engine.execute(
             '''

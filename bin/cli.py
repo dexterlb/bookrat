@@ -8,6 +8,7 @@ from ..lib import tf_idf
 from ..lib.web import web
 import progressbar
 import os
+from ..lib import parse_book
 
 @click.group()
 def main():
@@ -108,17 +109,23 @@ def precompute(db, dir):
 
 @click.command(help='precompute just one book')
 @click.option('--db', help='database URN', required=True)
-@click.argument('book_id')
-def precompute_one(db, book_id):
+@click.argument('book_url')
+def precompute_one(db, book_url):
     m = megatron.Megatron(db)
+
+    book_parser = parse_book.BookParser(book_url)
+    book = book_parser.parse()
+    book_id = m.book_controller.add_one(book)
 
     counting_worker.run(m, book_id)
 
-    m.word_book_controller.add_indices()
-
     tfidf = tf_idf.TFIDF(m)
-    tfidf.compute_idf()
 
+    m.tf_idf_controller.drop_tables()
+    m.tf_idf_controller.create_tables()
+
+    tfidf.compute_idf()
+    
     m.tf_idf_controller.add_idf_indices()
 
     tfidf.compute_tfidf()
