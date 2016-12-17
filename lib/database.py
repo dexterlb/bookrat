@@ -159,8 +159,8 @@ class Word(Base):
 class Work(Base):
     __tablename__ = 'work'
     book_id = Column(Integer, primary_key=True)
-    taken = Column(Boolean)
-    finished = Column(Boolean)
+    taken = Column(Boolean, index=True)
+    finished = Column(Boolean, index=True)
     def __repr__(self):
        return "<Work(book_id='%s', taken='%s', finished='%s')>" % (
                             self.book_id, self.taken, self.finished)
@@ -177,7 +177,7 @@ class Tfidf(Base):
     __tablename__ = 'tfidf'
     book_id = Column(Integer, primary_key=True, index=True)
     word = Column(String, primary_key=True, index=True)
-    tfidf_score = Column(Float)
+    tfidf_score = Column(Float, index=True)
     def __repr__(self):
        return "<tfidf(book_id='%s', word='%s', tfidf_score='%s')>" % (
         self.book_id, self.word, self.tfidf_score)
@@ -208,8 +208,8 @@ class Book(Base):
 class WordBook(Base):
     __tablename__ = 'wordbook'
     id = Column(Integer, primary_key=True)
-    book_id = Column(Integer, ForeignKey("book.id"), nullable=False)
-    word = Column(String, nullable=False)
+    book_id = Column(Integer, ForeignKey("book.id"), nullable=False, index=True)
+    word = Column(String, nullable=False, index=True)
     count = Column(Integer)
     def __repr__(self):
         return "<WordBook(book_id='%s', word='%s', count='%s')>" % (
