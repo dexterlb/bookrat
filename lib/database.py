@@ -47,13 +47,17 @@ class WordController(Controller):
 
 class WorkController(Controller):
     def update_ids(self):
-        self.database.engine.execute(
-            '''
-            insert into work(book_id, taken, finished)
-            select id, false, false from book
-            where id not in (select book_id from work);
-            '''
-        )
+        try:
+            self.database.engine.execute(
+                '''
+                insert into work(book_id, taken, finished)
+                select id, false, false from book
+                where id not in (select book_id from work);
+                '''
+            )
+        except pycopg2.IntegrityError:
+            print('warning: race condition in update_ids. Probably harmless.')
+            pass
 
     def get_all(self):
         works = []
@@ -165,7 +169,7 @@ class WordBookController(Controller):
         self.database.engine.execute(
             '''
             create index word_index on wordbook(word);
-            create index book_id_index on wordbook(book_id); 
+            create index book_id_index on wordbook(book_id);
             '''
         )
 
