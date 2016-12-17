@@ -3,6 +3,7 @@ import sys
 from ..lib import import_book
 from ..lib import parse_dictionary
 from ..lib import megatron
+from ..lib import counting_worker
 import progressbar
 
 @click.group()
@@ -18,6 +19,13 @@ def import_books(db, dir):
 
     progress = progressbar.ProgressBar()
     importer.import_from(dir, progress)
+
+@click.command(help='import books from a folder')
+@click.option('--db', help='database URN', required=True)
+def count(db):
+    m = megatron.Megatron(db)
+    counting_worker.run(m)
+
 
 @click.command(help='import words from json dictionary file')
 @click.option('--db', help='database URN', required=True)
@@ -47,6 +55,7 @@ main.add_command(import_books)
 main.add_command(parse_dict)
 main.add_command(createdb)
 main.add_command(dropdb)
+main.add_command(count)
 
 if __name__ == '__main__':
     main()

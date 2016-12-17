@@ -1,6 +1,6 @@
 import unittest
 from collections import defaultdict
-import cache
+from . import cache
 
 class TestBulkCall(unittest.TestCase):
     def test_doesnt_break_iterator(self):
