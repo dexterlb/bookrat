@@ -10,7 +10,7 @@ class Database:
         self.engine = create_engine(url)
         self.make_session = sessionmaker()
         self.make_session.configure(bind=self.engine)
-        
+
     def create_database(self):
         Base.metadata.create_all(self.engine)
 
@@ -118,7 +118,7 @@ class TfIdfController(Controller):
             select book_id, wordbook.word as word,
             ((0.5 + 0.5 * (count :: float / t.mc)) * (idf.idf_score) ) as tfidf_score
             from wordbook
-            join 
+            join
                 (select book_id as bid, max(count) as mc
                  from wordbook group by book_id
                 ) as t on t.bid = book_id
@@ -129,10 +129,10 @@ class TfIdfController(Controller):
     def compute_top_words(self):
         self.database.engine.execute(
             '''
-            insert into topwords(book_id, words)  
+            insert into topwords(book_id, words)
             select b.id as book_id,
             array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 10) as words from book as b;
+            order by tfidf_score desc limit 75) as words from book as b;
             '''
         )
 
