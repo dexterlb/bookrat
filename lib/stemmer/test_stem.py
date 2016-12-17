@@ -35,9 +35,13 @@ class TestStemmer(unittest.TestCase):
 
 def test_cases(test, stems, rules_file, dict_file):
     stemmer = Stemmer(rules_file, dict_file)
+    errors = []
     for stem, cases in stems:
         for case in cases:
-            test.assertEqual(list(stemmer([case]))[0], stem)
+            derived = list(stemmer([case]))[0]
+            if derived != stem:
+                errors.append(case + ' -> ' + derived + ' instead of ' + stem)
+    test.AssertEqual([], stem)
 
 if __name__ == '__main__':
     unittest.main()
