@@ -99,10 +99,10 @@ class WorkController(Controller):
             return None
 
     def get_by_id(self, book_id):
-        record = self.database.engine.execute(q
+        record = self.database.engine.execute(
         '''
             update work set taken=true
-            where book_id = %d returning book_id;''' % int(book_id)
+            where book_id = {} returning book_id;'''.format(book_id)
         ).first()
 
         if record:
