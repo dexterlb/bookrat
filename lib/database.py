@@ -4,6 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import pycopg2
+
 Base = declarative_base()
 class Database:
     def __init__(self, url):
