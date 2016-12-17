@@ -8,6 +8,7 @@ from .stemmer import Stemmer, load_dictionary, load_stop_words
 from . import parse_text
 from .stemmer.cache import LimitedCache
 from . import database
+from .ctrlc import CtrlC
 
 class BookGetter(Thread):
     def __init__(self, input_books, megatron):
@@ -17,8 +18,10 @@ class BookGetter(Thread):
 
     def run(self):
         for book in self.megatron.work_controller.yield_book():
+            if CtrlC.pressed:
+                break
             self.input_books.put(book)
-            print("+ Taking from databae: " + book.title)
+            print("+ Taking from database: " + book.title)
         self.input_books.put(None)
         print("+ Took all.")
 
