@@ -12,8 +12,10 @@ article_base(X, A) :- atom_concat(A, B, X), female_article(B), female_noun(A).
 article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
 
 % стол-ове
+% бро/й - еве
 % чайни/к-ци
 % учител-и
+% бинок/ъл - ли
 % стол-а
 % кон-я
 % кон-е
@@ -31,6 +33,7 @@ article_base(X, A) :- atom_concat(A, B, X), middle_article(B), middle_noun(A).
 
 male_plural("ове").
 male_plural("eве").
+male_plural("ли").
 male_plural("ци").
 male_plural("и").
 male_plural("я").
@@ -47,6 +50,7 @@ middle_plural("я").
 plural_base(X, A) :- atom_concat(A, B, X), male_plural(B), male_noun(A).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_noun(C).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "ъл", C), male_noun(C).
 
 plural_base(X, A) :- atom_concat(A, B, X), female_plural(B), female_noun(A).
 plural_base(X, C) :- atom_concat(A, B, X), female_plural(B), atom_concat(A, "а", C), female_noun(C).
@@ -64,10 +68,7 @@ adjective_suffix("ни").
 adjective_suffix("и").
 
 adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), adjective(A).
-adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), pronoun(A).
 adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), adjective(C).
-adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), pronoun(C).
-
 
 present_tense("иш").
 present_tense("и").
@@ -184,6 +185,13 @@ verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, 
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "вам", C), verb(C).
 
 mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), plural_base(A, C). 
+mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), exception(A, C). 
+
+% изклюения:
+replace("етра", "етър"). 
+replace("етри", "етър").
+
+exception(X, C) :- atom_concat(A, B, X), replace(B, T), atom_concat(A, T, C). 
 
 base(X) :- male_noun(X).
 base(X) :- female_noun(X).
@@ -193,6 +201,7 @@ base(X) :- pronoun(X).
 base(X) :- verb(X).
 
 base_of(X, X) :- base(X).
+base_of(X, A) :- exception(X, A).
 base_of(X, A) :- article_base(X, A).
 base_of(X, A) :- mix_base(X, A).
 base_of(X, A) :- plural_base(X, A).
