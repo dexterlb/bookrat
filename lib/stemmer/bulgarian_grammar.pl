@@ -68,10 +68,7 @@ adjective_suffix("ни").
 adjective_suffix("и").
 
 adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), adjective(A).
-adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), pronoun(A).
 adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), adjective(C).
-adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), pronoun(C).
-
 
 present_tense("иш").
 present_tense("и").
@@ -188,6 +185,13 @@ verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, 
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "вам", C), verb(C).
 
 mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), plural_base(A, C). 
+mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), exception(A, C). 
+
+% изклюения:
+replace("етра", "етър"). 
+replace("етри", "етър").
+
+exception(X, C) :- atom_concat(A, B, X), replace(B, T), atom_concat(A, T, C). 
 
 base(X) :- male_noun(X).
 base(X) :- female_noun(X).
@@ -197,6 +201,7 @@ base(X) :- pronoun(X).
 base(X) :- verb(X).
 
 base_of(X, X) :- base(X).
+base_of(X, A) :- exception(X, A).
 base_of(X, A) :- article_base(X, A).
 base_of(X, A) :- mix_base(X, A).
 base_of(X, A) :- plural_base(X, A).
