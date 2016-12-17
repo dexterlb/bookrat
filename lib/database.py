@@ -57,7 +57,7 @@ class WorkController(Controller):
                 where id not in (select book_id from work);
                 '''
             )
-        except psycopg2.IntegrityError:
+        except:
             print('warning: race condition in update_ids. Probably harmless.')
             pass
 
