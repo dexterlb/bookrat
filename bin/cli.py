@@ -4,6 +4,7 @@ from ..lib import import_book
 from ..lib import parse_dictionary
 from ..lib import megatron
 from ..lib import counting_worker
+from ..lib import tf_idf
 import progressbar
 
 @click.group()
@@ -51,11 +52,19 @@ def dropdb(db):
     m.database.drop_all()
     click.echo('Dropped the database')
 
+@click.command(help='compute idf')
+@click.option('--db', help='database URN', required=True)
+def idf(db):
+    m = megatron.Megatron(db)
+    tfidf = tf_idf.TFIDF(m)
+    tfidf.compute_idf()
+
 main.add_command(import_books)
 main.add_command(parse_dict)
 main.add_command(createdb)
 main.add_command(dropdb)
 main.add_command(count)
+main.add_command(idf)
 
 if __name__ == '__main__':
     main()

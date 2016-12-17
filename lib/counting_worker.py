@@ -4,8 +4,9 @@ import time
 import random
 import os
 
-from .stemmer import Stemmer
+from .stemmer import Stemmer, load_dictionary
 from . import parse_text
+from .stemmer.cache import LimitedCache
 from . import database
 
 class BookGetter(Thread):
@@ -38,14 +39,14 @@ class WordCounter(Thread):
                     'stemmer',
                     'bulgarian_words.json'  # TODO: this as well
                 )
-            )
+            ),
+            cache=LimitedCache(limit=200000)
         )
         self.text_parser = parse_text.TextParser(self.stemmer)
 
     def run(self):
         book = self.input_books.get()
         while book:
-            print("Word counter taking book")
             counted_words = self.text_parser.count_stemmed_words(book)
             self.output_books.put((book, counted_words))
             print("- Finished with book: " + book.title)

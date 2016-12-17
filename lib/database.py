@@ -101,6 +101,16 @@ class BookController(Controller):
         session.commit()
         return books
 
+class TfIdfController(Controller):
+    def compute_idf():
+        self.database.engine.execute(
+            '''
+            insert into work(book_id, taken, finished)
+            select id, false, false from book
+            where id not in (select book_id from work);
+            '''
+        )
+
 class WordBookController(Controller):
     def add(self, word, book_id):
         session = self.make_session()
@@ -121,6 +131,16 @@ class WordBookController(Controller):
         session.commit()
         return counters
 
+    def compute_idf(self):
+        self.database.engine.execute(
+            '''
+            insert into idf(word, idf_score)
+            select word, 
+            log(1 + (select count(*) from book) :: float / count(book_id)) as idf_score
+            from wordbook group by word;
+            '''
+        )
+
 class Word(Base):
     __tablename__ = 'word'
     id = Column(Integer, primary_key=True)
@@ -139,6 +159,14 @@ class Work(Base):
     def __repr__(self):
        return "<Work(book_id='%s', taken='%s', finished='%s')>" % (
                             self.book_id, self.taken, self.finished)
+
+class Idf(Base):
+    __tablename__ = 'idf'
+    word = Column(String, primary_key=True)
+    idf_score = Column(Float)
+    def __repr__(self):
+       return "<idf(word='%s', idf_score='%s')>" % (
+        self.word, self.idf_score)
 
 
 class Book(Base):
@@ -161,6 +189,9 @@ class WordBook(Base):
     book_id = Column(Integer, ForeignKey("book.id"), nullable=False)
     word = Column(String, nullable=False)
     count = Column(Integer)
+    tfidf = Column(Float)
     def __repr__(self):
-        return "<WordBook(book_id='%s', word='%s', count='%s')>" % (
-                            self.book_id, self.word, self.count)
+        return "<WordBook(book_id='%s', word='%s', count='%s', tfidf='%s')>" % (
+                            self.book_id, self.word, self.count, self.tfidf)
+
+
