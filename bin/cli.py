@@ -121,16 +121,9 @@ def precompute_one(db, book_url):
 
     tfidf = tf_idf.TFIDF(m)
 
-    m.tf_idf_controller.drop_tables()
-    m.tf_idf_controller.create_tables()
-
     tfidf.compute_idf()
-    
-    m.tf_idf_controller.add_idf_indices()
 
     tfidf.compute_tfidf()
-
-    m.tf_idf_controller.add_tfidf_indices()
 
     tfidf.compute_top_words()
 

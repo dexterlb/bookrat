@@ -5,10 +5,21 @@ class TFIDF:
             self.megatron = megatron
 
     def compute_idf(self):
+            print('creating index')
+            self.megatron.word_book_controller.add_indices()
+            print('created index')
+            self.megatron.tf_idf_controller.drop_tables()
+            self.megatron.tf_idf_controller.create_tables()
             self.megatron.tf_idf_controller.compute_idf()
 
     def compute_tfidf(self):
+            print('creating index')
+            self.megatron.tf_idf_controller.add_idf_indices()
+            print('created index')
             self.megatron.tf_idf_controller.compute_tfidf()
 
     def compute_top_words(self):
+            print('creating index')
+            self.megatron.tf_idf_controller.add_tfidf_indices()
+            print('created index')
             self.megatron.tf_idf_controller.compute_top_words()
