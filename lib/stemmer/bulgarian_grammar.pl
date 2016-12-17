@@ -187,6 +187,13 @@ verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, 
 
 mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), plural_base(A, C). 
 
+base(X) :- male_noun(X).
+base(X) :- female_noun(X).
+base(X) :- middle_noun(X).
+base(X) :- adjective(X).
+base(X) :- pronoun(X).
+base(X) :- verb(X).
+
 base_of(X, X) :- base(X).
 base_of(X, A) :- article_base(X, A).
 base_of(X, A) :- plural_base(X, A).
