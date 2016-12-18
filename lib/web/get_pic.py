@@ -18,7 +18,7 @@ def get_picture(url):
     div = soup.find_all('div', {'class': 'cover thumbnail'})[0]
     src = div.find_all('img')[0]['src']
 
-    return re.sub(r'(.*)\d+(.jpg)$', r'http:\1max\2', src)
+    return re.sub(r'(.*\.)\d+(.jpg)$', r'http:\1max\2', src)
 
 def base64_picture(url):
     try:
