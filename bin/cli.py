@@ -139,6 +139,12 @@ def recommend(db, title):
     else:
         return None
 
+@click.command(help='get recommendations for a book')
+@click.option('--db', help='database URN', required=True)
+@click.argument('keywords', required=True)
+def keyword_recommend(db, keywords):
+    m = megatron.Megatron(db)
+    print(" recommendations: " + str(list(m.tf_idf_controller.keyword_recommendation(keywords))))
 
 @click.command(help='return book by title')
 @click.option('--db', help='database URN', required=True)
@@ -146,6 +152,8 @@ def recommend(db, title):
 def search(db, title):
     m = megatron.Megatron(db)
     print(m.book_controller.search(title))
+
+
 
 @click.command(help='serve the server')
 @click.option('--db', help='database URN', required=True)
@@ -166,6 +174,7 @@ main.add_command(precompute)
 main.add_command(precompute_one)
 main.add_command(serve)
 main.add_command(recommend)
+main.add_command(keyword_recommend)
 main.add_command(recommend_by_id)
 main.add_command(search)
 
