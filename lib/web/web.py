@@ -53,6 +53,20 @@ class Server(object):
     def display(self):
         return cherrypy.session['mystring']
 
+    @cherrypy.expose
+    def search_keywords(self, query):
+        book = self.megatron.book_controller.search(query)
+        if book:
+            gs = list(self.megatron.tf_idf_controller.keyword_recommendations(book.id))
+            return json.dumps({"book": self.json_book(book),
+             "recommended":[self.json_result(b) for b in gs] })
+        else:
+            return json.dumps({"book": {"title": None, "author": None, "url": None},
+                "recommended":[]})
+    @cherrypy.expose
+    def display(self):
+        return cherrypy.session['mystring']
+
 
 def main(db):
     conf = {
