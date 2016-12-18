@@ -132,7 +132,7 @@ class TfIdfController(Controller):
         Idf.__table__.create(self.database.engine)
         Tfidf.__table__.create(self.database.engine)
         TopWords.__table__.create(self.database.engine)
-        TopBookWordCount.create(self.database.engine)
+        TopBookWordCount.__table__.create(self.database.engine)
 
 
     def drop_tables(self):
@@ -193,7 +193,7 @@ class TfIdfController(Controller):
     def compute_top_book_word_count(self):
         self.database.engine.execute(
             '''
-            insert inot topbookwordcount(book_id, top_count)
+            insert into topbookwordcount(book_id, top_count)
             select book.id, max_term.count from book
             join lateral (
                 select book_id, count
@@ -267,12 +267,12 @@ class TopWords(Base):
         self.book_id, self.word, self.tfidf_score)
 
 class TopBookWordCount(Base):
-      __tablename__ = 'topbookwordcount'
-        book_id = Column(Integer, primary_key=True)
-        top_count = Column(Integer)
-        def __repr__(self):
-           return "<topbookwordcount(book_id='%s', top_count='%s' )>" % (
-            self.book_id, self.top_count)
+    __tablename__ = 'topbookwordcount'
+    book_id = Column(Integer, primary_key=True)
+    top_count = Column(Integer)
+    def __repr__(self):
+       return "<topbookwordcount(book_id='%s', top_count='%s' )>" % (
+        self.book_id, self.top_count)
 
 class Book(Base):
     __tablename__ = "book"
