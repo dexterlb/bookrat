@@ -132,12 +132,14 @@ class TfIdfController(Controller):
         Idf.__table__.create(self.database.engine)
         Tfidf.__table__.create(self.database.engine)
         TopWords.__table__.create(self.database.engine)
+        TopBookWordCount.create(self.database.engine)
 
 
     def drop_tables(self):
         Idf.__table__.drop(self.database.engine)
         Tfidf.__table__.drop(self.database.engine)
         TopWords.__table__.drop(self.database.engine)
+        TopBookWordCount.__table__.drop(self.database.engine)
 
     def compute_idf(self):
         self.database.engine.execute(
@@ -194,7 +196,7 @@ class TfIdfController(Controller):
             insert inot topbookwordcount(book_id, top_count)
             select book.id, max_term.count from book
             join lateral (
-                select book_id, count 
+                select book_id, count
                 from wordbook where book_id = book.id
                 order by count desc limit 1
             ) as max_term on true;
