@@ -10,7 +10,11 @@ class TFIDF:
             print('created index')
             self.megatron.tf_idf_controller.drop_tables()
             self.megatron.tf_idf_controller.create_tables()
+            print('precomputing top book word count')
+            self.megatron.tf_idf_controller.compute_top_book_word_count_idf()
+            print('precomputing idf')
             self.megatron.tf_idf_controller.compute_idf()
+
 
     def compute_tfidf(self):
             print('creating index')

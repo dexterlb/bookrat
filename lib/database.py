@@ -31,7 +31,7 @@ class Controller:
         session.add(item)
         session.commit()
         print(item.id)
-        return item.id 
+        return item.id
 
     def add_many(self, items):
         session = self.database.make_session()
@@ -130,14 +130,16 @@ class BookController(Controller):
 class TfIdfController(Controller):
     def create_tables(self):
         Idf.__table__.create(self.database.engine)
-        Tfidf.__table__.create(self.database.engine) 
-        TopWords.__table__.create(self.database.engine) 
+        Tfidf.__table__.create(self.database.engine)
+        TopWords.__table__.create(self.database.engine)
+        TopBookWordCount.create(self.database.engine)
 
 
     def drop_tables(self):
         Idf.__table__.drop(self.database.engine)
-        Tfidf.__table__.drop(self.database.engine) 
-        TopWords.__table__.drop(self.database.engine) 
+        Tfidf.__table__.drop(self.database.engine)
+        TopWords.__table__.drop(self.database.engine)
+        TopBookWordCount.__table__.drop(self.database.engine)
 
     def compute_idf(self):
         self.database.engine.execute(
@@ -184,9 +186,23 @@ class TfIdfController(Controller):
             insert into topwords(book_id, words)
             select b.id as book_id,
             array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 75) as words from book as b;
+            order by tfidf_score desc limit 100) as words from book as b;
             '''
         )
+
+    def compute_top_book_word_count(self):
+        self.database.engine.execute(
+            '''
+            insert inot topbookwordcount(book_id, top_count)
+            select book.id, max_term.count from book
+            join lateral (
+                select book_id, count
+                from wordbook where book_id = book.id
+                order by count desc limit 1
+            ) as max_term on true;
+            '''
+        )
+
 
 class WordBookController(Controller):
     def get_all(self):
@@ -250,6 +266,13 @@ class TopWords(Base):
        return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)
 
+class TopBookWordCount(Base):
+      __tablename__ = 'topbookwordcount'
+        book_id = Column(Integer, primary_key=True)
+        top_count = Column(Integer)
+        def __repr__(self):
+           return "<topbookwordcount(book_id='%s', top_count='%s' )>" % (
+            self.book_id, self.top_count)
 
 class Book(Base):
     __tablename__ = "book"

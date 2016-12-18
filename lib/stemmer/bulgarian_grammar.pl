@@ -40,6 +40,7 @@ male_plural("и").
 male_plural("я").
 male_plural("а").
 male_plural("е").
+male_plural("зи").
 
 female_plural("и").
 
@@ -50,6 +51,7 @@ middle_plural("я").
 
 plural_base(X, A) :- atom_concat(A, B, X), male_plural(B), male_noun(A).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "г", C), male_noun(C).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_noun(C).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "ъл", C), male_noun(C).
 
@@ -187,14 +189,31 @@ verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, 
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ша", C), not_empty(A), verb(C).
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "вам", C), not_empty(A), verb(C).
 
+article_adjective("ият").
+article_adjective("ата").
+article_adjective("ото").
+article_adjective("ите").
+article_adjective("ният").
+article_adjective("ната").
+article_adjective("ните").
+article_adjective("ното").
+
+article_pronoun("то").
+
+article_adjective_base(X, A) :- atom_concat(A, B, X), article_adjective(B), adjective(A).
+article_adjective_base(X, A) :- atom_concat(A, B, X), article_pronoun(B), pronoun(A).
+article_adjective_base(X, C) :- atom_concat(A, B, X), article_adjective(B), atom_concat(A, "ен", C), not_empty(A), adjective(C).
+
 mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), plural_base(A, C). 
 mix_base(X, C) :- atom_concat(A, B, X), plural_article(B), exception(A, C). 
+mix_base(X, C) :- atom_concat(A, B, X), female_article(B), exception(A, C).
 
 % изклюения:
 replace("етра", "етър"). 
 replace("етри", "етър").
 
 exception(X, C) :- atom_concat(A, B, X), replace(B, T), atom_concat(A, T, C). 
+exception(X, C) :- atom_concat(C, "ка", X), male_noun(C).
 
 base(X) :- male_noun(X).
 base(X) :- female_noun(X).
@@ -210,6 +229,7 @@ base_of(X, A) :- mix_base(X, A).
 base_of(X, A) :- plural_base(X, A).
 base_of(X, A) :- adjective_base(X, A).
 base_of(X, A) :- verb_base(X, A).
+base_of(X, A) :- article_adjective_base(X, A).
 base_of(X, X).
 
 bases_of(L, R) :- maplist(base_of, L, R).

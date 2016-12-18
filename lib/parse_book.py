@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 from . import database
 
 class BookParser:
@@ -20,7 +20,7 @@ class BookParser:
         return default
 
     def get_paragraphs(self):
-        for paragraph in self.root.findall(".//body//p"):
+        for paragraph in self.root.xpath(".//body[not(contains(@name, 'info'))]//p"):
             if paragraph.text:
                 yield paragraph.text
 
