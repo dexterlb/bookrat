@@ -229,7 +229,7 @@ class TfIdfController(Controller):
     def recommendations(self, book_id):
         session = self.make_session()
         top = session.query(TopWords).filter(TopWords.book_id == book_id).first()
-        words = top.words[1:100]
+        words = top.words
 
         results = session.execute(
             '''
