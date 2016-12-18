@@ -140,7 +140,6 @@ class BookController(Controller):
 
         return book
 
-
 class TfIdfController(Controller):
     def create_tables(self):
         Idf.__table__.create(self.database.engine)
@@ -232,7 +231,7 @@ class TfIdfController(Controller):
 
         results = session.execute(
             '''
-            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
+            select f.book_id, array_intersect(f.words, :words :: varchar[]), (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
             from topwords f
             where f.book_id != :id and f.words && (:words :: varchar[])
             order by number desc limit 5;
@@ -245,17 +244,40 @@ class TfIdfController(Controller):
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, int(result[1]))
+            yield SearchResult(book, list(result[1]), int(result[2]))
 
         session.commit()
 
+    def keyword_recommendation(self, keywords):
+        keywords = keywords.split()
+        session = self.make_session()
+        results = session.execute(
+            '''
+            select f.book_id, array_intersect(f.words, :words :: varchar[]), (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
+            from topwords f
+            where f.words && (:words :: varchar[])
+            order by number desc limit 5;
+            ''',
+            {
+                'words': keywords
+            }
+        )
+
+        for result in results:
+            book = session.query(Book).filter(Book.id == result[0]).first()
+            yield SearchResult(book, list(result[1]), int(result[2]))
+
+        session.commit()
+
+
 class SearchResult:
-    def __init__(self, book, matches):
+    def __init__(self, book, matches, num_matches):
         self.book = book
         self.matches = matches
+        self.num_matches = num_matches
 
     def __repr__(self):
-        return self.book.title + ' [' + str(self.matches) + ']'
+        return self.book.title + ' [' + str(self.num_matches) + '] - ' + str(self.matches)
 
 class WordBookController(Controller):
     def get_all(self):
