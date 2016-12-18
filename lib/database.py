@@ -130,15 +130,13 @@ class BookController(Controller):
         keywords = query.split()
         session = self.make_session()
 
-        query_obj = session.query(Item)
-        for k in search_keywords:
-            query_obj = query_obj.filter(Item.description.like('%{0}%'.format(k)))
+        query_obj = session.query(Book)
+        for k in keywords:
+            query_obj = query_obj.filter(Book.title.ilike('%{0}%'.format(k)))
 
         book = query_obj.first()
-
-
         session.commit()
-
+        return book
 
 class TfIdfController(Controller):
     def create_tables(self):
