@@ -122,6 +122,9 @@ ul {
   padding: 0;
   text-align: left;
 }
+.book img {
+  border-radius: 20px;
+}
 
 /*searched books*/
 .searched-book {
@@ -129,8 +132,7 @@ ul {
   display: inline-block;
 }
 
-.searched-book .book{
-  
+.book{
   display: inline-block;
   padding: 10px;
   border: 1px solid #ccc;
@@ -139,7 +141,7 @@ ul {
   border-color: #c4c4c4;
   border-radius: 35px; /* (height/2) + border-width */
   border-style: solid;
-	border-width: 2px;
+  border-width: 2px;
 }
 .searched-book .book-info{
   /*display: table;
@@ -153,19 +155,28 @@ ul {
   width: 200;
 }
 
+.searched-book .book {
+  display: flex;
+}
+
 /*suggested books*/
 .suggested-books img {
     margin: 5px;
-    /*border: 1px solid #ccc;*/
     float: left;
     width: 180px;
-    /*height: 270px;*/
 }
 
-.searched-book .book {
-  display: flex;
-} 
 
-.result .suggested-books .book {
-  float: left;
+.result .suggested-books {
+  display: inline-block;
 }
+
+.suggested-books .book {
+  margin: 30 5;
+}
+
+.suggested-books .book-cover {
+  display: inline-block;
+  padding: 20 0;
+}
+
