@@ -154,14 +154,12 @@ class TfIdfController(Controller):
         self.database.engine.execute(
             '''
             insert into tfidf(book_id, word, tfidf_score)
-            select book_id, wordbook.word as word,
-            ((0.5 + 0.5 * (count :: float / t.mc)) * (idf.idf_score) ) as tfidf_score
-            from wordbook
-            join
-                (select book_id as bid, max(count) as mc
-                 from wordbook group by book_id
-                ) as t on t.bid = book_id
-            join idf on wordbook.word = idf.word;
+            select w.book_id, w.word as word,
+                ((0.5 + 0.5 * (count :: float / t.top_count)) * (idf.idf_score) ) as tfidf_score
+            from wordbook w
+            join topbookwordcount t
+            on t.book_id = w.book_id
+            join idf on w.word = idf.word;
             '''
         )
 
@@ -216,7 +214,6 @@ class WordBookController(Controller):
     def add_indices(self):
         self.database.engine.execute(
             '''
-            create index word_index on wordbook(word);
             create index book_id_index on wordbook(book_id);
             '''
         )
