@@ -183,12 +183,14 @@ class TfIdfController(Controller):
         self.database.engine.execute(
             '''
             create index idf_word on idf(word);
+            create index top_book_word_count_book_id on topbookwordcount(book_id);
             '''
         )
 
     def add_tfidf_indices(self):
          self.database.engine.execute(
             '''
+            create index tfidf_book_id_index on tfidf(book_id);
             create index tfidf_word_index on tfidf(word);
             create index tfidf_score_index on tfidf(tfidf_score);
             '''
@@ -197,10 +199,11 @@ class TfIdfController(Controller):
     def compute_top_words(self):
         self.database.engine.execute(
             '''
-            insert into topwords(book_id, words)
+            create table topwords(book_id, words) as
             select b.id as book_id,
             array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 100) as words from book as b;
+            order by tfidf_score desc limit 100) as words from book as b
+            with data;
             '''
         )
 
