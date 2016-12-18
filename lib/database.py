@@ -203,7 +203,7 @@ class TfIdfController(Controller):
             create table topwords(book_id, words) as
             select b.id as book_id,
             array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 100) as words from book as b
+            order by tfidf_score desc limit 300) as words from book as b
             with data;
             '''
         )
