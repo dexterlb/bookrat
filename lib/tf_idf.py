@@ -11,7 +11,7 @@ class TFIDF:
             self.megatron.tf_idf_controller.drop_tables()
             self.megatron.tf_idf_controller.create_tables()
             print('precomputing top book word count')
-            self.megatron.tf_idf_controller.compute_top_book_word_count_idf()
+            self.megatron.tf_idf_controller.compute_top_book_word_count()
             print('precomputing idf')
             self.megatron.tf_idf_controller.compute_idf()
 
