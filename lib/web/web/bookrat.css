@@ -2,7 +2,9 @@
 
 html {
   font-family: monospace;
-  background-image: url("images/foo.jpg");
+  background-image: url("http://static9.depositphotos.com/1510192/1141/v/950/depositphotos_11416296-stock-illustration-vector-illustration-leaves-of-palm.jpg");
+  background-size: 30%;
+  
 }
 
 body {
@@ -104,7 +106,7 @@ input:-moz-placeholder {
 }
 /*results*/
 .result {
-  margin: 0 0 0 8%;
+  margin: 0 0 0 3%;
   text-align: center;
 }
 
@@ -117,14 +119,21 @@ ul {
 
 /*searched books*/
 .searched-book {
+  width: 70%;
   display: inline-block;
 }
+
 .searched-book .book{
+  
   display: inline-block;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: rgb(228, 225, 213);
+  /*border-radius: 35%;*/
+  background-color: white;
+  border-color: #c4c4c4;
+  border-radius: 35px; /* (height/2) + border-width */
+  border-style: solid;
+	border-width: 2px;
 }
 .searched-book .book-info{
   /*display: table;
