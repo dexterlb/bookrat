@@ -128,7 +128,7 @@ ul {
 
 /*searched books*/
 .searched-book {
-  width: 70%;
+  width: 40%;
   display: inline-block;
 }
 
@@ -144,9 +144,20 @@ ul {
   border-width: 2px;
 }
 .searched-book .book-info{
-  /*display: table;
-  vertical-align: middle;*/
+  text-overflow: none;
+  padding: 5% 0;
+  margin: 10%;
 }
+
+.searched-book .book-info .lable {
+  font-size: 25px;
+  color: #888;
+}
+
+.searched-book .book-info .text {
+  font-size: 27px;
+}
+
 .searched-book ul {
   /*display: block;*/
   /*display: table-cell;*/
@@ -166,7 +177,6 @@ ul {
     width: 180px;
 }
 
-
 .result .suggested-books {
   display: inline-block;
 }
@@ -178,5 +188,19 @@ ul {
 .suggested-books .book-cover {
   display: inline-block;
   padding: 20 0;
+}
+
+.suggested-books ul {
+  margin: 0 20;
+}
+
+.suggested-books .book-info .lable {
+  font-size: 18px;
+  color: #888;
+  padding: 5;
+}
+
+.suggested-books .book-info .text {
+  font-size: 20px;
 }
 
