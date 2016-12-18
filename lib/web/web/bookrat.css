@@ -7,6 +7,7 @@ html {
 body {
 }
 
+/*search */
 .flexsearch--wrapper {
 	height: auto;
 	width: auto;
@@ -100,22 +101,53 @@ input:-moz-placeholder {
   padding-bottom: 10px;
   margin: 25px;
 }
-
+/*results*/
 .result {
-  display: flex;
+  margin: 0 0 0 8%;
+  text-align: center;
 }
 
-.result .searched-book img {
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/*searched books*/
+.searched-book {
+  display: inline-block;
+}
+.searched-book .book{
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #fcfcfc;
+}
+.searched-book .book-info{
+  /*display: table;
+  vertical-align: middle;*/
+}
+.searched-book ul {
+  /*display: block;*/
+  /*display: table-cell;*/
+}
+.searched-book img {
   width: 200;
 }
 
-/*.result .suggested-books img {
-  width: 150;
-}*/
-
-.result .suggested-books img {
+/*suggested books*/
+.suggested-books img {
     margin: 5px;
     border: 1px solid #ccc;
     float: left;
     width: 180px;
+}
+
+.searched-book .book {
+  display: flex;
+} 
+
+.result .suggested-books .book {
+  float: left;
 }
