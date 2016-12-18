@@ -23,6 +23,7 @@ def get_picture(url):
 def base64_picture(url):
     try:
         img = get_picture(url)
+        print('got picture: ' + img)
         return b64encode(get(img))
     except:
         return None # evil.
