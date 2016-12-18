@@ -7,8 +7,9 @@ html {
   
 }
 
-body {
-}
+/*reset href styles*/
+a:link    { color: black; }
+a:visited { color: black; }
 
 /*search */
 .flexsearch--wrapper {
