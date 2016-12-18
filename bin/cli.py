@@ -93,16 +93,10 @@ def precompute(db, dir):
 
     counting_worker.run(m)
 
-    m.word_book_controller.add_indices()
-
     tfidf = tf_idf.TFIDF(m)
     tfidf.compute_idf()
 
-    m.tf_idf_controller.add_idf_indices()
-
     tfidf.compute_tfidf()
-
-    m.tf_idf_controller.add_tfidf_indices()
 
     tfidf.compute_top_words()
 
