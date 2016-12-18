@@ -132,11 +132,14 @@ class BookController(Controller):
 
         query_obj = session.query(Book)
         for k in keywords:
-            query_obj = query_obj.filter(Book.title.ilike('%{0}%'.format(k)))
+            query_obj = query_obj.filter(Book.title.like('%{0}%'.format(k)))
 
         book = query_obj.first()
+
         session.commit()
+
         return book
+
 
 class TfIdfController(Controller):
     def create_tables(self):
@@ -162,15 +165,17 @@ class TfIdfController(Controller):
         )
 
     def compute_tfidf(self):
+        Tfidf.__table__.drop(self.database.engine)
         self.database.engine.execute(
             '''
-            insert into tfidf(book_id, word, tfidf_score)
+            create table tfidf(book_id, word, tfidf_score) as
             select w.book_id, w.word as word,
                 ((0.5 + 0.5 * (count :: float / t.top_count)) * (idf.idf_score) ) as tfidf_score
             from wordbook w
             join topbookwordcount t
             on t.book_id = w.book_id
-            join idf on w.word = idf.word;
+            join idf on w.word = idf.word
+            with data;
             '''
         )
 
@@ -200,15 +205,17 @@ class TfIdfController(Controller):
         )
 
     def compute_top_book_word_count(self):
+        TopBookWordCount.__table__.drop(self.engine)
         self.database.engine.execute(
             '''
-            insert into topbookwordcount(book_id, top_count)
+            create table topbookwordcount(book_id, top_count) as
             select book.id, max_term.count from book
             join lateral (
                 select book_id, count
                 from wordbook where book_id = book.id
                 order by count desc limit 1
-            ) as max_term on true;
+            ) as max_term on true
+            with data;
             '''
         )
 
@@ -257,6 +264,7 @@ class WordBookController(Controller):
         self.database.engine.execute(
             '''
             create index book_id_index on wordbook(book_id);
+            create index word_index on wordbook(word);
             '''
         )
 
