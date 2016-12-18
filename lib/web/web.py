@@ -36,9 +36,9 @@ class Server(object):
 
     def json_result(self, search_result):
         book = search_result.book
-        score = search_result.matches
+        score = search_result.num_matches
         return {"title": book.title, "author": book.author, "url": book.chitanka_id, "score": score}
-   
+
     @cherrypy.expose
     def search(self, query):
         book = self.megatron.book_controller.search(query)
