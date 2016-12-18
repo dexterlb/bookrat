@@ -184,7 +184,7 @@ ul {
 }
 
 .result .suggested-books {
-  display: inline-block;
+  display: block;
 }
 
 .suggested-books .book {
