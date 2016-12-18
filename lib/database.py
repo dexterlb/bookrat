@@ -164,15 +164,17 @@ class TfIdfController(Controller):
         )
 
     def compute_tfidf(self):
+        Tfidf.__table__.drop(self.database.engine)
         self.database.engine.execute(
             '''
-            insert into tfidf(book_id, word, tfidf_score)
+            create table tfidf(book_id, word, tfidf_score) as
             select w.book_id, w.word as word,
                 ((0.5 + 0.5 * (count :: float / t.top_count)) * (idf.idf_score) ) as tfidf_score
             from wordbook w
             join topbookwordcount t
             on t.book_id = w.book_id
-            join idf on w.word = idf.word;
+            join idf on w.word = idf.word
+            with data;
             '''
         )
 
@@ -259,6 +261,7 @@ class WordBookController(Controller):
         self.database.engine.execute(
             '''
             create index book_id_index on wordbook(book_id);
+            create index word_index on wordbook(word);
             '''
         )
 
