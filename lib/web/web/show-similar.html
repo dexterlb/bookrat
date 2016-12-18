@@ -10,16 +10,25 @@
     <body>
         <header>
         </header>
-        
-        <section id="search">
-            <input type="text" placeholder="Въведи име на книга" id="title" />
-            <button id="get-similar" />Потърси</button>
+
+        <section class="flexsearch">
+            <div id="logo">
+                <img src="images/bookrat.png">
+            </div>
+            <div class="flexsearch--wrapper">
+                <form class="flexsearch--form" action="#" method="post">
+                    <div class="flexsearch--input-wrapper">
+                        <input id="title" class="flexsearch--input" type="search" placeholder="Въведи име на книга">
+                    </div>
+                    <input id="get-similar" class="flexsearch--submit" type="submit" value="&#10140;"/>
+                </form>
+            </div>
         </section>
 
-        <section id="result">
-            <section id="searched-book">
+        <section class="result">
+            <section class="searched-book">
             </section>
-            <section id="suggested-books">
+            <section class="suggested-books">
             </section>
         </section>
 
