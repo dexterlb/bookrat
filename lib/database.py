@@ -208,7 +208,7 @@ class TfIdfController(Controller):
         )
 
     def compute_top_book_word_count(self):
-        TopBookWordCount.__table__.drop(self.engine)
+        TopWordsCount.__table__.drop(self.engine)
         self.database.engine.execute(
             '''
             create table topbookwordcount(book_id, top_count) as
