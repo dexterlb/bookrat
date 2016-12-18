@@ -139,9 +139,10 @@ ul {
 /*suggested books*/
 .suggested-books img {
     margin: 5px;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
     float: left;
     width: 180px;
+    height: 280px;
 }
 
 .searched-book .book {
