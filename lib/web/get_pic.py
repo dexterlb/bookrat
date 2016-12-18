@@ -15,9 +15,10 @@ def get_picture(url):
     the_page = get(url)
     soup = BeautifulSoup(the_page, 'html.parser')
 
-    src = soup.find_all('img', {'alt': 'Корица', 'width': '200'})[0]['src']
+    div = soup.find_all('div', {'class': 'cover thumbnail'})[0]
+    src = div.find_all('img')[0]['src']
 
-    return re.sub(r'(.*)200(.jpg)$', r'http:\1max\2', src)
+    return re.sub(r'(.*)\d+(.jpg)$', r'http:\1max\2', src)
 
 def base64_picture(url):
     try:
