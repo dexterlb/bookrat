@@ -231,7 +231,7 @@ class TfIdfController(Controller):
 
         results = session.execute(
             '''
-            select f.book_id, array_intersect(f.words, :words :: varchar[]), (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
+            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
             from topwords f
             where f.book_id != :id and f.words && (:words :: varchar[])
             order by number desc limit 5;
@@ -244,7 +244,7 @@ class TfIdfController(Controller):
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, list(result[1]), int(result[2]))
+            yield SearchResult(book, int(result[1]))
 
         session.commit()
 
@@ -253,7 +253,7 @@ class TfIdfController(Controller):
         session = self.make_session()
         results = session.execute(
             '''
-            select f.book_id, array_intersect(f.words, :words :: varchar[]), (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
+            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
             from topwords f
             where f.words && (:words :: varchar[])
             order by number desc limit 5;
@@ -265,19 +265,18 @@ class TfIdfController(Controller):
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, list(result[1]), int(result[2]))
+            yield SearchResult(book, int(result[1]))
 
         session.commit()
 
 
 class SearchResult:
-    def __init__(self, book, matches, num_matches):
+    def __init__(self, book, num_matches):
         self.book = book
-        self.matches = matches
         self.num_matches = num_matches
 
     def __repr__(self):
-        return self.book.title + ' [' + str(self.num_matches) + '] - ' + str(self.matches)
+        return self.book.title + ' [' + str(self.num_matches) + ']'
 
 class WordBookController(Controller):
     def get_all(self):
