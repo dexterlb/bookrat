@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Книжен плъх</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" type="text/css" href="bookrat.css">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="get-similar-keywords.js"></script>
+    </head>
+
+    <body>
+        <header>
+        </header>
+
+        <section class="flexsearch">
+            <div id="logo">
+                <img src="images/bookrat.png">
+            </div>
+            <div class="flexsearch--wrapper">
+                <form class="flexsearch--form" action="#" method="post">
+                    <div class="flexsearch--input-wrapper">
+                        <input id="title" class="flexsearch--input" type="search" placeholder="Въведи име на книга">
+                    </div>
+                    <input id="get-similar" class="flexsearch--submit" type="submit" value="&#10140;"/>
+                </form>
+            </div>
+        </section>
+
+        <section class="result">
+            <section class="searched-book">
+            </section>
+            <section class="suggested-books">
+            </section>
+        </section>
+
+        <footer>
+        </footer>
+    </body>
+</html>

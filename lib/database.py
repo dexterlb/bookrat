@@ -136,6 +136,8 @@ class BookController(Controller):
 
         book = query_obj.first()
 
+        print(query + ' -> ' + str(book))
+
         session.commit()
 
         return book
@@ -248,7 +250,7 @@ class TfIdfController(Controller):
 
         session.commit()
 
-    def keyword_recommendation(self, keywords):
+    def keyword_recommendations(self, keywords):
         keywords = keywords.split()
         session = self.make_session()
         results = session.execute(
