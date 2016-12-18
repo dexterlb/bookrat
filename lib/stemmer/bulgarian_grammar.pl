@@ -40,6 +40,7 @@ male_plural("и").
 male_plural("я").
 male_plural("а").
 male_plural("е").
+male_plural("зи").
 
 female_plural("и").
 
@@ -50,6 +51,7 @@ middle_plural("я").
 
 plural_base(X, A) :- atom_concat(A, B, X), male_plural(B), male_noun(A).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "к", C), male_noun(C).
+plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "г", C), male_noun(C).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "й", C), male_noun(C).
 plural_base(X, C) :- atom_concat(A, B, X), male_plural(B), atom_concat(A, "ъл", C), male_noun(C).
 
