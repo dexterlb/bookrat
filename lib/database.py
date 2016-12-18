@@ -132,11 +132,14 @@ class BookController(Controller):
 
         query_obj = session.query(Book)
         for k in keywords:
-            query_obj = query_obj.filter(Book.title.ilike('%{0}%'.format(k)))
+            query_obj = query_obj.filter(Book.title.like('%{0}%'.format(k)))
 
         book = query_obj.first()
+
         session.commit()
+
         return book
+
 
 class TfIdfController(Controller):
     def create_tables(self):
@@ -202,15 +205,17 @@ class TfIdfController(Controller):
         )
 
     def compute_top_book_word_count(self):
+        TopBookWordCount.__table__.drop(self.engine)
         self.database.engine.execute(
             '''
-            insert into topbookwordcount(book_id, top_count)
+            create table topbookwordcount(book_id, top_count) as
             select book.id, max_term.count from book
             join lateral (
                 select book_id, count
                 from wordbook where book_id = book.id
                 order by count desc limit 1
-            ) as max_term on true;
+            ) as max_term on true
+            with data;
             '''
         )
 
