@@ -1,4 +1,11 @@
-@import "compass/css3";
+/*@import "compass/css3";*/
+
+html {
+  font-family: monospace;
+}
+
+body {
+}
 
 .flexsearch--wrapper {
 	height: auto;
@@ -25,7 +32,7 @@
 }
 
 .flexsearch {
-  margin: 20px 300px 20px 200px;
+  margin: 2% 15% 5% 10%;
   padding: 0 25px 0 20px; /* Padding for other horizontal elements */
 }
 
@@ -35,18 +42,18 @@
 	box-sizing: content-box;
  	height: 60px;
   padding: 0 46px 0 10px;
-	border-color: #888;
+  text-align: center;
+	border-color: #c4c4c4;
   border-radius: 35px; /* (height/2) + border-width */
   border-style: solid;
-	border-width: 5px;
+	border-width: 2px;
   margin-top: 15px;
   color: #333;
-  font-family: 'Helvetica', sans-serif;
 	font-size: 26px;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 }
-	
+
 .flexsearch--submit {
   position: absolute;
 	right: 0;
@@ -60,14 +67,13 @@
   margin-right: 5px; /* border-width */
 	background: transparent;
   color: #888;
-  font-family: 'Helvetica', sans-serif;
-  font-size: 40px;
-  line-height: 60px;
+  font-size: 30px;
+  line-height: 40px;
 }
 
 .flexsearch--input:focus {
   outline: none;
-  border-color: #333;
+  border-color: #005c48;
 }
 
 .flexsearch--input:focus.flexsearch--submit {
@@ -93,4 +99,23 @@ input:-moz-placeholder {
   transform: scale(-1, 1);
   padding-bottom: 10px;
   margin: 25px;
+}
+
+.result {
+  display: flex;
+}
+
+.result .searched-book img {
+  width: 200;
+}
+
+/*.result .suggested-books img {
+  width: 150;
+}*/
+
+.result .suggested-books img {
+    margin: 5px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 180px;
 }
