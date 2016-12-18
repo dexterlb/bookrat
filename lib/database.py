@@ -126,6 +126,19 @@ class BookController(Controller):
         session.commit()
         return books
 
+    def search(self, query):
+        keywords = query.split()
+        session = self.make_session()
+
+        query_obj = session.query(Item)
+        for k in search_keywords:
+            query_obj = query_obj.filter(Item.description.like('%{0}%'.format(k)))
+
+        book = query_obj.first()
+
+
+        session.commit()
+
 
 class TfIdfController(Controller):
     def create_tables(self):
@@ -201,6 +214,37 @@ class TfIdfController(Controller):
             '''
         )
 
+    def recommendations(self, book_id):
+        session = self.make_session()
+        top = session.query(TopWords).filter(TopWords.book_id == book_id).first()
+        words = top.words
+
+        results = session.execute(
+            '''
+            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
+            from topwords f
+            where f.book_id != :id and f.words && (:words :: varchar[])
+            order by number desc limit 5;
+            ''',
+            {
+                'id': book_id,
+                'words': words
+            }
+        )
+
+        for result in results:
+            book = session.query(Book).filter(Book.id == result[0]).first()
+            yield SearchResult(book, int(result[1]))
+
+        session.commit()
+
+class SearchResult:
+    def __init__(self, book, matches):
+        self.book = book
+        self.matches = matches
+
+    def __repr__(self):
+        return self.book.title + ' [' + str(self.matches) + ']'
 
 class WordBookController(Controller):
     def get_all(self):
@@ -217,7 +261,6 @@ class WordBookController(Controller):
             create index book_id_index on wordbook(book_id);
             '''
         )
-
 
 class Word(Base):
     __tablename__ = 'word'

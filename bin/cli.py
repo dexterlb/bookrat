@@ -121,6 +121,13 @@ def precompute_one(db, book_url):
 
     tfidf.compute_top_words()
 
+@click.command(help='get recommendations for a book')
+@click.option('--db', help='database URN', required=True)
+@click.argument('book_id', required=True)
+def recommend(db, book_id):
+    m = megatron.Megatron(db)
+    print(str(list(m.tf_idf_controller.recommendations(int(book_id)))))
+
 @click.command(help='serve the server')
 def serve():
     web.main()
@@ -138,6 +145,7 @@ main.add_command(top)
 main.add_command(precompute)
 main.add_command(precompute_one)
 main.add_command(serve)
+main.add_command(recommend)
 
 if __name__ == '__main__':
     main()
