@@ -31,7 +31,7 @@ class Controller:
         session.add(item)
         session.commit()
         print(item.id)
-        return item.id 
+        return item.id
 
     def add_many(self, items):
         session = self.database.make_session()
@@ -130,14 +130,14 @@ class BookController(Controller):
 class TfIdfController(Controller):
     def create_tables(self):
         Idf.__table__.create(self.database.engine)
-        Tfidf.__table__.create(self.database.engine) 
-        TopWords.__table__.create(self.database.engine) 
+        Tfidf.__table__.create(self.database.engine)
+        TopWords.__table__.create(self.database.engine)
 
 
     def drop_tables(self):
         Idf.__table__.drop(self.database.engine)
-        Tfidf.__table__.drop(self.database.engine) 
-        TopWords.__table__.drop(self.database.engine) 
+        Tfidf.__table__.drop(self.database.engine)
+        TopWords.__table__.drop(self.database.engine)
 
     def compute_idf(self):
         self.database.engine.execute(
@@ -184,7 +184,7 @@ class TfIdfController(Controller):
             insert into topwords(book_id, words)
             select b.id as book_id,
             array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 75) as words from book as b;
+            order by tfidf_score desc limit 100) as words from book as b;
             '''
         )
 
