@@ -8,6 +8,7 @@ html {
 }
 
 /*reset href styles*/
+a {text-decoration: none;}
 a:link    { color: black; }
 a:visited { color: black; }
 
@@ -156,6 +157,7 @@ ul {
 }
 
 .searched-book .book-info .text {
+  word-wrap: break-word;
   font-size: 27px;
 }
 
@@ -176,6 +178,7 @@ ul {
     margin: 5px;
     float: left;
     width: 180px;
+
 }
 
 .result .suggested-books {
@@ -202,6 +205,8 @@ ul {
 }
 
 .suggested-books .book-info .text {
+  min-width: 130px;
   font-size: 20px;
+  word-wrap: break-word;
 }
 
