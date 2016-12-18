@@ -72,6 +72,7 @@ adjective_suffix("и").
 
 adjective_base(X, A) :- atom_concat(A, B, X), adjective_suffix(B), adjective(A).
 adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "ен", C), adjective(C).
+adjective_base(X, C) :- atom_concat(A, B, X), adjective_suffix(B), atom_concat(A, "и", C), adjective(C).
 
 present_tense("иш").
 present_tense("и").
