@@ -188,6 +188,20 @@ class TfIdfController(Controller):
             '''
         )
 
+    def compute_top_book_word_count(self):
+        self.database.engine.execute(
+            '''
+            insert inot topbookwordcount(book_id, top_count)
+            select book.id, max_term.count from book
+            join lateral (
+                select book_id, count 
+                from wordbook where book_id = book.id
+                order by count desc limit 1
+            ) as max_term on true;
+            '''
+        )
+
+
 class WordBookController(Controller):
     def get_all(self):
         counters = []
@@ -250,6 +264,13 @@ class TopWords(Base):
        return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)
 
+class TopBookWordCount(Base):
+      __tablename__ = 'topbookwordcount'
+        book_id = Column(Integer, primary_key=True)
+        top_count = Column(Integer)
+        def __repr__(self):
+           return "<topbookwordcount(book_id='%s', top_count='%s' )>" % (
+            self.book_id, self.top_count)
 
 class Book(Base):
     __tablename__ = "book"
