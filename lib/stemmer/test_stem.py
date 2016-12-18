@@ -34,7 +34,7 @@ def test_cases(test, stems, rules_file, dictionary, stop_words):
         for case in cases:
             derived = list(stemmer([case]))[0]
             if derived != stem:
-                errors.append(case + ' -> ' + str(derived) + ' instead of ' + stem)
+                errors.append(case + ' -> ' + str(derived) + ' instead of ' + str(stem))
     if errors:
         print("\n".join(errors))
         test.assertTrue(False)

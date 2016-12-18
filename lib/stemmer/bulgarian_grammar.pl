@@ -191,10 +191,12 @@ verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, 
 
 article_adjective("ият").
 article_adjective("ата").
+article_adjective("ото").
 article_adjective("ите").
 article_adjective("ният").
 article_adjective("ната").
 article_adjective("ните").
+article_adjective("ното").
 
 article_pronoun("то").
 
