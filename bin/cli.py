@@ -148,8 +148,9 @@ def search(db, title):
     print(m.book_controller.search(title))
 
 @click.command(help='serve the server')
-def serve():
-    web.main()
+@click.option('--db', help='database URN', required=True)
+def serve(db):
+    web.main(db)
 
 
 

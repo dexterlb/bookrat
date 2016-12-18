@@ -7,10 +7,16 @@ import cherrypy
 
 
 from . import get_pic
+from .. import megatron
 
 
 
-class StringGenerator(object):
+class Server(object):
+    def __init__(self, db):
+        super(Server, self).__init__()
+        self.db = db
+        self.megatron = megatron.Megatron(db)
+
     @cherrypy.expose
     def index(self):
         with open(os.path.join(
@@ -25,21 +31,30 @@ class StringGenerator(object):
     def get_picture(self, url=""):
         return get_pic.base64_picture(url)
 
+    def json_book(self, book):
+        return {"title": book.title, "author": book.author, "url": book.chitanka_id}
+
+    def json_result(self, search_result):
+        book = search_result.book
+        score = search_result.matches
+        return {"title": book.title, "author": book.author, "url": book.chitanka_id, "score": score}
+   
     @cherrypy.expose
     def search(self, query):
-        return json.dumps({"book": {"title":"Gs", "author":"Bash Gs", "url":"https://chitanka.info/text/1"},
-                           "recommended":[{"title":"Gs1", "author":"Bash Gs1", "url":"https://chitanka.info/text/2"},
-                                          {"title":"Gs1", "author":"Bash Gs1", "url": None},
-                                          {"title":"Gs1", "author":"Bash Gs1", "url":"https://chitanka.info/text/2"},
-                                          {"title":"Gs1", "author":"Bash Gs1", "url":"https://chitanka.info/text/2"},
-                                          {"title":"Gs1", "author":"Bash Gs1", "url":"https://chitanka.info/text/2"}]})
-
+        book = self.megatron.book_controller.search(query)
+        if book:
+            gs = list(self.megatron.tf_idf_controller.recommendations(book.id))
+            return json.dumps({"book": self.json_book(book),
+             "recommended":[self.json_result(b) for b in gs] })
+        else:
+            return json.dumps({"book": {"title": None, "author": None, "url": None},
+                "recommended":[]})
     @cherrypy.expose
     def display(self):
         return cherrypy.session['mystring']
 
 
-def main():
+def main(db):
     conf = {
         '/': {
             'tools.staticdir.on': True,
@@ -49,7 +64,4 @@ def main():
             )
         },
     }
-    cherrypy.quickstart(StringGenerator(), '/', conf)
-
-if __name__ == '__main__':
-    main()
+    cherrypy.quickstart(Server(db), '/', conf)
