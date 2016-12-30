@@ -167,6 +167,7 @@ ul {
 }
 .searched-book img {
   width: 200;
+  height: 300;
 }
 
 .searched-book .book {
@@ -178,11 +179,12 @@ ul {
     margin: 5px;
     float: left;
     width: 180px;
+    height: 270px;
 
 }
 
 .result .suggested-books {
-  display: inline-block;
+  display: block;
 }
 
 .suggested-books .book {
