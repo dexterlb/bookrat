@@ -65,7 +65,7 @@ def idf(db):
     tfidf = tf_idf.TFIDF(m)
     tfidf.compute_idf()
 
-@click.command(help='compute idf')
+@click.command(help='compute tfidf')
 @click.option('--db', help='database URN', required=True)
 def tfidf(db):
     m = megatron.Megatron(db)

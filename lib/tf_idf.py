@@ -8,6 +8,8 @@ class TFIDF:
             print('creating index')
             self.megatron.word_book_controller.add_indices()
             print('created index')
+
+            print('dropping old tfidf tables')
             self.megatron.tf_idf_controller.drop_tables()
             self.megatron.tf_idf_controller.create_tables()
             print('precomputing top book word count')
@@ -15,15 +17,21 @@ class TFIDF:
             print('precomputing idf')
             self.megatron.tf_idf_controller.compute_idf()
 
-
-    def compute_tfidf(self):
-            print('creating index')
+            print('creating index on idf')
             self.megatron.tf_idf_controller.add_idf_indices()
             print('created index')
+
+
+    def compute_tfidf(self):
             self.megatron.tf_idf_controller.compute_tfidf()
 
-    def compute_top_words(self):
-            print('creating index')
+            print('creating index on tfidf')
             self.megatron.tf_idf_controller.add_tfidf_indices()
-            print('created index')
+            print('finished creating index')
+
+    def compute_top_words(self):
             self.megatron.tf_idf_controller.compute_top_words()
+
+            print('creating index on topwords')
+            self.megatron.tf_idf_controller.add_top_words_indices()
+            print('finished creating index')
