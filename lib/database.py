@@ -211,6 +211,22 @@ class TfIdfController(Controller):
         )
         print('finished computing top words')
 
+
+    def get_top_words(self):
+        session = self.make_session()
+
+        print('getting top words')
+        results = session.execute(
+            '''
+            select b.id as book_id,
+            array(select word from tfidf where book_id = b.id
+            order by tfidf_score desc limit 300) as words from book as b
+            '''
+        )
+        print('finished getting top words')
+        session.commit()
+        return results
+
     def compute_top_book_word_count(self):
         TopBookWordCount.__table__.drop(self.database.engine)
         self.database.engine.execute(

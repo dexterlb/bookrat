@@ -1,4 +1,6 @@
 from . import megatron
+from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 
 class TFIDF:
     def __init__(self, megatron):
@@ -21,9 +23,27 @@ class TFIDF:
             self.megatron.tf_idf_controller.add_idf_indices()
             print('created index')
             self.megatron.tf_idf_controller.compute_tfidf()
-
-    def compute_top_words(self):
             print('creating index')
             self.megatron.tf_idf_controller.add_tfidf_indices()
             print('created index')
-            self.megatron.tf_idf_controller.compute_top_words()
+
+    def compute_top_words(self):
+            books = self.megatron.tf_idf_controller.get_top_words()
+            print('got top words from database')
+
+            es = Elasticsearch()
+            actions = []
+
+            for book in books:
+                action = {
+                    "_index": "books",
+                    "_type": "book",
+                    "_id": book.book_id,
+                    "_source": {
+                        "words" : book.words
+                        }
+                    }
+                actions.append(action)
+            print('Bulk insert')
+            if len(actions) > 0:
+                helpers.bulk(es, actions)
