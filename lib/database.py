@@ -287,7 +287,6 @@ class TfIdfController(Controller):
         session.commit()
 
     def keyword_recommendations(self, keywords):
-        keywords = keywords.split()
         session = self.make_session()
         results = session.execute(
             '''

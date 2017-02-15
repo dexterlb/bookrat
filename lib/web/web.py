@@ -82,7 +82,7 @@ class Server(object):
         })
 
     def search_by_keywords(self, query):
-        r = self.megatron.keyword_recommendations(query.split())
+        r = self.megatron.tf_idf_controller.keyword_recommendations(query.split())
 
         return json.dumps({
             "recommended":self.recommendations_to_books(r)
