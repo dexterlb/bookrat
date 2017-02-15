@@ -222,14 +222,17 @@ class TfIdfController(Controller):
     )
 
     def compute_top_words(self):
-        TopWords.__table__.drop(self.database.engine)
+        # TopWords.__table__.drop(self.database.engine)
         print('computing top words')
         self.database.engine.execute(
             '''
-            create table topwords(book_id, words) as
-            select b.id as book_id,
-            array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 300) as words from book as b
+            create table topwords(book_id, word) as
+            select b.id as book_id, w.word as word
+            from book as b
+            join lateral (
+                select word from tfidf where book_id = b.id
+                order by tfidf_score desc limit 300
+            ) w on true
             with data;
             '''
         )
@@ -376,7 +379,7 @@ class Tfidf(Base):
 class TopWords(Base):
     __tablename__ = 'topwords'
     book_id = Column(Integer, primary_key=True)
-    words = Column(ARRAY(String))
+    word = Column(String)
     def __repr__(self):
        return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)

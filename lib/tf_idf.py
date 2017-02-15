@@ -1,6 +1,4 @@
 from . import megatron
-from elasticsearch import Elasticsearch
-from elasticsearch import helpers
 
 class TFIDF:
     def __init__(self, megatron):
@@ -28,7 +26,4 @@ class TFIDF:
             print('created index')
 
     def compute_top_words(self):
-            books = self.megatron.tf_idf_controller.get_top_words()
-            print('got top words from database')
-
-            self.megatron.search.insert(books)
+            self.megatron.tf_idf_controller.compute_top_words()
