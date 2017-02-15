@@ -32,13 +32,22 @@ class Search:
         if result["found"]:
             return result['_source']['words']
 
-    def search(self, keywords):
+    def search(self, keywords, exclude_ids=[]):
         hits = self.es.search(
             index=self.index,
             body={
                 "query": {
-                    "match": {
-                        "words": " ".join(keywords)
+                    "bool": {
+                        "must": {
+                            "match": {
+                                "words": " ".join(keywords)
+                            }
+                        },
+                        "must_not": {
+                            "ids": {
+                                "values": exclude_ids
+                            }
+                        }
                     }
                 }
             }

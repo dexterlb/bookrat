@@ -45,7 +45,7 @@ class Server(object):
 
     @cherrypy.expose
     def search(self, query, is_keyword=False):
-        if is_keyword:
+        if is_keyword and is_keyword == "true":
             return self.search_by_keywords(query)
         else:
             return self.search_by_book(query)
@@ -61,7 +61,7 @@ class Server(object):
 
         top_words = self.megatron.search.top_words(book.id)
 
-        r = self.megatron.search.search(top_words)
+        r = self.megatron.search.search(top_words, exclude_ids=[book.id])
 
         return json.dumps({"book": self.megatron.book_controller.json_book(book),
          "recommended":self.megatron.book_controller.recommendations_to_books(r)})
