@@ -219,10 +219,10 @@ class TfIdfController(Controller):
             create index tfidf_word_index on tfidf(word);
             create index tfidf_score_index on tfidf(tfidf_score);
             '''
-    )
+        )
 
     def compute_top_words(self):
-        # TopWords.__table__.drop(self.database.engine)
+        TopWords.__table__.drop(self.database.engine)
         print('computing top words')
         self.database.engine.execute(
             '''
@@ -237,6 +237,16 @@ class TfIdfController(Controller):
             '''
         )
         print('finished computing top words')
+        print('creating index on top words')
+        self.database.engine.execute(
+            '''
+            create index topwords_book_id_index on topwords(book_id);
+            create index topwords_word_index on topwords(word);
+            '''
+        )
+        print('yay')
+
+
 
 
     def get_top_words(self):
@@ -273,17 +283,23 @@ class TfIdfController(Controller):
         session = self.make_session()
         top = session.query(TopWords).filter(TopWords.book_id == book_id).first()
         words = top.words
-
+        # TODO: unfinished (I just copy/pasted the query, need to parse the result)
         results = session.execute(
             '''
-            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
-            from topwords f
-            where f.book_id != :id and f.words && (:words :: varchar[])
-            order by number desc limit 5;
+            select
+                a.book_id as book_id,
+                count(a.word) as score,
+                array_agg(a.word) as common_words
+            from topwords as a
+            join lateral (
+                select word, book_id from topwords where book_id = :id
+            ) as b on a.word = b.word
+            where a.book_id != b.book_id
+            group by a.book_id
+            order by score desc;
             ''',
             {
                 'id': book_id,
-                'words': words
             }
         )
 
