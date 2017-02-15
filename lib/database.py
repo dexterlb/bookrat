@@ -132,7 +132,7 @@ class BookController(Controller):
 
         query_obj = session.query(Book)
         for k in keywords:
-            query_obj = query_obj.filter(Book.title.like('%{0}%'.format(k)))
+            query_obj = query_obj.filter(Book.title.ilike('%{0}%'.format(k)))
 
         book = query_obj.first()
 
