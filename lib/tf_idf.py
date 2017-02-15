@@ -1,4 +1,6 @@
 from . import megatron
+from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 
 class TFIDF:
     def __init__(self, megatron):
@@ -8,8 +10,6 @@ class TFIDF:
             print('creating index')
             self.megatron.word_book_controller.add_indices()
             print('created index')
-
-            print('dropping old tfidf tables')
             self.megatron.tf_idf_controller.drop_tables()
             self.megatron.tf_idf_controller.create_tables()
             print('precomputing top book word count')
@@ -17,21 +17,18 @@ class TFIDF:
             print('precomputing idf')
             self.megatron.tf_idf_controller.compute_idf()
 
-            print('creating index on idf')
-            self.megatron.tf_idf_controller.add_idf_indices()
-            print('created index')
-
 
     def compute_tfidf(self):
+            print('creating index')
+            self.megatron.tf_idf_controller.add_idf_indices()
+            print('created index')
             self.megatron.tf_idf_controller.compute_tfidf()
-
-            print('creating index on tfidf')
+            print('creating index')
             self.megatron.tf_idf_controller.add_tfidf_indices()
-            print('finished creating index')
+            print('created index')
 
     def compute_top_words(self):
-            self.megatron.tf_idf_controller.compute_top_words()
+            books = self.megatron.tf_idf_controller.get_top_words()
+            print('got top words from database')
 
-            print('creating index on topwords')
-            self.megatron.tf_idf_controller.add_top_words_indices()
-            print('finished creating index')
+            self.megatron.search.insert(books)

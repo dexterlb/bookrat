@@ -72,7 +72,7 @@ def tfidf(db):
     tfidf = tf_idf.TFIDF(m)
     tfidf.compute_tfidf()
 
-@click.command(help='compute idf')
+@click.command(help='compute top words')
 @click.option('--db', help='database URN', required=True)
 def top(db):
     m = megatron.Megatron(db)
