@@ -142,29 +142,8 @@ class BookController(Controller):
 
         return book
 
-    def recommendation_to_book(self, session, recommendation):
-        id = recommendation["id"]
-        book = session.query(Book).filter(Book.id == id).one()
-
-        return {
-            "score": recommendation["score"],
-            "matches": recommendation["matches"],
-            "top_words": recommendation["top_words"],
-            "title": book.title,
-            "author": book.author,
-            "url": book.chitanka_id
-        }
-
     def json_book(self, book):
         return {"title": book.title, "author": book.author, "url": book.chitanka_id}
-
-    def recommendations_to_books(self, recommendations):
-        session = self.make_session()
-
-        books = [self.recommendation_to_book(session, r) for r in recommendations]
-
-        session.commit()
-        return books
 
 class TfIdfController(Controller):
     def create_tables(self):
@@ -293,7 +272,8 @@ class TfIdfController(Controller):
             ) as b on a.word = b.word
             where a.book_id != b.book_id
             group by a.book_id
-            order by score desc;
+            order by score desc
+            limit 10;
             ''',
             {
                 'id': book_id,
@@ -320,7 +300,8 @@ class TfIdfController(Controller):
                 select u.w as word from unnest(:words) u(w)
             ) as b on a.word = b.word
             group by a.book_id
-            order by score desc;
+            order by score desc
+            limit 10;
             ''',
             {
                 'words': keywords
