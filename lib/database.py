@@ -226,11 +226,11 @@ class TfIdfController(Controller):
         print('computing top words')
         self.database.engine.execute(
             '''
-            create table topwords(book_id, word) as
-            select b.id as book_id, w.word as word
+            create table topwords(book_id, word, tfidf_score) as
+            select b.id as book_id, w.word as word, w.tfidf_score as tfidf_score
             from book as b
             join lateral (
-                select word from tfidf where book_id = b.id
+                select word, tfidf_score from tfidf where book_id = b.id
                 order by tfidf_score desc limit 300
             ) w on true
             with data;
@@ -400,6 +400,7 @@ class TopWords(Base):
     __tablename__ = 'topwords'
     book_id = Column(Integer, primary_key=True)
     word = Column(String)
+    tfidf_score = Column(Float)
     def __repr__(self):
        return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)
