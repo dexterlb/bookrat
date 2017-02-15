@@ -73,15 +73,6 @@ class Server(object):
             "recommended":self.megatron.book_controller.recommendations_to_books(r)
         })
 
-    @cherrypy.expose
-    def display(self):
-        return cherrypy.session['mystring']
-
-    @cherrypy.expose
-    def display(self):
-        return cherrypy.session['mystring']
-
-
 def main(db):
     conf = {
         '/': {

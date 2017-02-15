@@ -57,6 +57,7 @@ class Search:
             {
                 "id":hit["_id"] ,
                 "score": hit["_score"],
-                "matches": list(set(hit["_source"]["words"]) & set(keywords))
+                "matches": list(set(hit["_source"]["words"]) & set(keywords)),
+                "top_words": hit["_source"]["words"][0:10]
             } for hit in hits
         ]

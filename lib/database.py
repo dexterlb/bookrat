@@ -149,6 +149,7 @@ class BookController(Controller):
         return {
             "score": recommendation["score"],
             "matches": recommendation["matches"],
+            "top_words": recommendation["top_words"],
             "title": book.title,
             "author": book.author,
             "url": book.chitanka_id
