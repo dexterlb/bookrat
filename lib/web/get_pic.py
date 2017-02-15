@@ -12,6 +12,7 @@ def get(url):
 def get_picture(url):
     '''Get picture from chitanka.com thumbnails'''
 
+    print('getting picture for ', url)
     the_page = get(url)
     soup = BeautifulSoup(the_page, 'html.parser')
 

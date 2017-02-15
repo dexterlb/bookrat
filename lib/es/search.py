@@ -8,7 +8,7 @@ class Search:
         self.type = "book"
 
     def delete(self):
-        self.es.delete(index=self.index)
+        self.es.indices.delete(index=self.index, ignore=[400, 404])
 
     def create_action(self, book):
         return {
@@ -23,10 +23,14 @@ class Search:
     def insert(self, books):
         self.delete()
 
-        actions = map(create_action, books)
+        actions = map(self.create_action, books)
         print('Bulk insert')
-        if len(actions) > 0:
-            helpers.bulk(es, actions)
+        helpers.bulk(self.es, actions)
+
+    def top_words(self, book_id):
+        result = self.es.get(index=self.index, id=book_id)
+        if result["found"]:
+            return result['_source']['words']
 
     def search(self, keywords):
         hits = self.es.search(

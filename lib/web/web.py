@@ -32,41 +32,50 @@ class Server(object):
         return get_pic.base64_picture(url)
 
 
-    def json_book(self, book):
-        return {"title": book.title, "author": book.author, "url": book.chitanka_id}
-
     def json_result(self, search_result):
         book = search_result.book
         score = search_result.num_matches
         return {"title": book.title, "author": book.author, "url": book.chitanka_id, "score": score}
 
     @cherrypy.expose
-    def test(self, query):
-        return json.dumps(self.megatron.search.search(query.split()))
+    def search(self, query):
+        recommendations = self.megatron.search.search(query.split())
+        responce = self.megatron.book_controller.recommendations_to_books(recommendations)
+        return json.dumps(responce)
 
     @cherrypy.expose
-    def search(self, query):
-        print('searching for ' + query)
-        book = self.megatron.book_controller.search(query)
-        if book:
-            print('found book: ' + book.title)
-            gs = list(self.megatron.tf_idf_controller.recommendations(book.id))
-            return json.dumps({"book": self.json_book(book),
-             "recommended":[self.json_result(b) for b in gs] })
+    def search(self, query, is_keyword=False):
+        if is_keyword:
+            return self.search_by_keywords(query)
         else:
-            print('not found')
+            return self.search_by_book(query)
+
+    def search_by_book(self, query):
+        book = self.megatron.book_controller.search(query)
+
+        if not book:
             return json.dumps({"book": {"title": None, "author": None, "url": None},
                 "recommended":[]})
+
+        print('found book: ' + book.title)
+
+        top_words = self.megatron.search.top_words(book.id)
+
+        r = self.megatron.search.search(top_words)
+
+        return json.dumps({"book": self.megatron.book_controller.json_book(book),
+         "recommended":self.megatron.book_controller.recommendations_to_books(r)})
+
+    def search_by_keywords(self, query):
+        r = self.megatron.search.search(query.split())
+
+        return json.dumps({
+            "recommended":self.megatron.book_controller.recommendations_to_books(r)
+        })
 
     @cherrypy.expose
     def display(self):
         return cherrypy.session['mystring']
-
-    @cherrypy.expose
-    def search_keywords(self, query):
-        gs = list(self.megatron.tf_idf_controller.keyword_recommendations(query))
-        return json.dumps({"book": {"title": "-", "author": "-", "url": None},
-            "recommended":[self.json_result(b) for b in gs] })
 
     @cherrypy.expose
     def display(self):
