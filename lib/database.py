@@ -281,9 +281,6 @@ class TfIdfController(Controller):
 
     def recommendations(self, book_id):
         session = self.make_session()
-        top = session.query(TopWords).filter(TopWords.book_id == book_id).first()
-        words = top.words
-        # TODO: unfinished (I just copy/pasted the query, need to parse the result)
         results = session.execute(
             '''
             select
@@ -305,7 +302,7 @@ class TfIdfController(Controller):
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, int(result[1]))
+            yield SearchResult(book, int(result[1]), list(result[2]))
 
         session.commit()
 
@@ -314,10 +311,16 @@ class TfIdfController(Controller):
         session = self.make_session()
         results = session.execute(
             '''
-            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
-            from topwords f
-            where f.words && (:words :: varchar[])
-            order by number desc limit 5;
+            select
+                a.book_id as book_id,
+                count(a.word) as score,
+                array_agg(a.word) as common_words
+            from topwords as a
+            join lateral (
+                select u.w as word from unnest(:words) u(w)
+            ) as b on a.word = b.word
+            group by a.book_id
+            order by score desc;
             ''',
             {
                 'words': keywords
@@ -326,15 +329,16 @@ class TfIdfController(Controller):
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, int(result[1]))
+            yield SearchResult(book, int(result[1]), list(result[2]))
 
         session.commit()
 
 
 class SearchResult:
-    def __init__(self, book, num_matches):
+    def __init__(self, book, num_matches, common_words):
         self.book = book
         self.num_matches = num_matches
+        self.common_words = common_words
 
     def __repr__(self):
         return self.book.title + ' [' + str(self.num_matches) + ']'
