@@ -299,7 +299,7 @@ class TfIdfController(Controller):
                 select u.w as word from unnest(:words) u(w)
             ) as b on a.word = b.word
             group by a.book_id
-            order by score desc
+            order by score desc, sum(a.tfidf_score) desc
             limit 10;
             ''',
             {
