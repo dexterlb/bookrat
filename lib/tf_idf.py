@@ -31,19 +31,4 @@ class TFIDF:
             books = self.megatron.tf_idf_controller.get_top_words()
             print('got top words from database')
 
-            es = Elasticsearch()
-            actions = []
-
-            for book in books:
-                action = {
-                    "_index": "books",
-                    "_type": "book",
-                    "_id": book.book_id,
-                    "_source": {
-                        "words" : book.words
-                        }
-                    }
-                actions.append(action)
-            print('Bulk insert')
-            if len(actions) > 0:
-                helpers.bulk(es, actions)
+            self.megatron.search.insert(books)

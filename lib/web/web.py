@@ -31,6 +31,7 @@ class Server(object):
     def get_picture(self, url=""):
         return get_pic.base64_picture(url)
 
+
     def json_book(self, book):
         return {"title": book.title, "author": book.author, "url": book.chitanka_id}
 
@@ -38,6 +39,10 @@ class Server(object):
         book = search_result.book
         score = search_result.num_matches
         return {"title": book.title, "author": book.author, "url": book.chitanka_id, "score": score}
+
+    @cherrypy.expose
+    def test(self, query):
+        return json.dumps(self.megatron.search.search(query.split()))
 
     @cherrypy.expose
     def search(self, query):
