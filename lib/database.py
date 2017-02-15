@@ -210,7 +210,7 @@ class TfIdfController(Controller):
             from book as b
             join lateral (
                 select word, tfidf_score from tfidf where book_id = b.id
-                order by tfidf_score desc limit 300
+                order by tfidf_score desc limit 600
             ) w on true
             with data;
             '''
