@@ -129,10 +129,6 @@ ul {
 }
 
 /*searched books*/
-.searched-book {
-  width: 40%;
-  display: inline-block;
-}
 
 .book{
   display: inline-block;
@@ -144,11 +140,21 @@ ul {
   border-radius: 35px; /* (height/2) + border-width */
   border-style: solid;
   border-width: 2px;
+  /*width: 60%;*/
 }
+
+.searched-book {
+  display: inline-block;
+  width: 60%;
+  /*max-width: 80%;*/
+  min-height: 400px;
+  max-height: 400px;
+}
+
 .searched-book .book-info{
   text-overflow: none;
   padding: 5% 0;
-  margin: 10%;
+  /*margin: 10%;*/
 }
 
 .searched-book .book-info .lable {
@@ -212,3 +218,97 @@ ul {
   word-wrap: break-word;
 }
 
+.option {
+
+}
+
+.suggested-book {
+  min-width: 500px;
+  max-width: 500px;
+  min-height: 700px;
+  max-height: 700px;
+}
+
+/*loading*/
+
+#loader {
+  background-color: whitesmoke;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -2.7em;
+  margin-left: -2.7em;
+  width: 5.4em;
+  height: 5.4em;
+}
+
+#hill {
+  position: absolute;
+  width: 7.1em;
+  height: 7.1em;
+  top: 1.7em;
+  left: 1.7em;
+  background-color: transparent;
+  border-left: .25em solid #005c48;
+  transform: rotate(45deg);
+}
+
+#hill:after {
+  content: '';
+  position: absolute;
+  width: 7.1em;
+  height: 7.1em;
+  left: 0;
+}
+
+#box {
+  position: absolute;
+  left: 0;
+  bottom: -.1em;
+  width: 1em;
+  height: 1em;
+  background-color: transparent;
+  border: .25em solid #005c48;
+  border-radius: 15%;
+  transform: translate(0, -1em) rotate(-45deg);
+  animation: push 2.5s cubic-bezier(.79, 0, .47, .97) infinite;
+}
+
+@keyframes push {
+  0% {
+    transform: translate(0, -1em) rotate(-45deg);
+  }
+  5% {
+    transform: translate(0, -1em) rotate(-50deg);
+  }
+  20% {
+    transform: translate(1em, -2em) rotate(47deg);
+  }
+  25% {
+    transform: translate(1em, -2em) rotate(45deg);
+  }
+  30% {
+    transform: translate(1em, -2em) rotate(40deg);
+  }
+  45% {
+    transform: translate(2em, -3em) rotate(137deg);
+  }
+  50% {
+    transform: translate(2em, -3em) rotate(135deg);
+  }
+  55% {
+    transform: translate(2em, -3em) rotate(130deg);
+  }
+  70% {
+    transform: translate(3em, -4em) rotate(217deg);
+  }
+  75% {
+    transform: translate(3em, -4em) rotate(220deg);
+  }
+  100% {
+    transform: translate(0, -1em) rotate(-225deg);
+  }
+}
+
+/*end of loading*/
