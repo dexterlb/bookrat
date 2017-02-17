@@ -239,16 +239,16 @@ ul {
   left: 50%;
   margin-top: -2.7em;
   margin-left: -2.7em;
-  width: 5.4em;
-  height: 5.4em;
+  width: 7.4em;
+  height: 7.4em;
 }
 
 #hill {
   position: absolute;
   width: 7.1em;
   height: 7.1em;
-  top: 1.7em;
-  left: 1.7em;
+  top: 2.7em;
+  left: 2.7em;
   background-color: transparent;
   border-left: .25em solid #005c48;
   transform: rotate(45deg);
