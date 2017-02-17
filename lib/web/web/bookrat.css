@@ -311,4 +311,63 @@ ul {
   }
 }
 
+.checkbox-option {
+	width: 120px;
+	height: 40px;
+	background: #fff;
+	margin: 20px 60px;
+  border-color: #c4c4c4;
+  border-style: solid;
+	border-width: 3px;
+	border-radius: 50px;
+	position: relative;
+}
+
+.checkbox-option:before {
+	content: 'On';
+	position: absolute;
+	top: 12px;
+	left: 13px;
+	height: 2px;
+	color: #005c48;
+	font-size: 16px;
+}
+
+.checkbox-option:after {
+	content: 'Off';
+	position: absolute;
+	top: 12px;
+	left: 84px;
+	height: 2px;
+  color: #888888;
+	font-size: 16px;
+}
+
+.checkbox-option label {
+	display: block;
+	width: 54px;
+	height: 22px;
+	border-radius: 50px;
+  border-color: #c4c4c4;
+
+	transition: all .5s ease;
+	cursor: pointer;
+	position: absolute;
+	top: 9px;
+	z-index: 1;
+	left: 12px;
+	background: #888888;
+}
+
+/**
+ * Create the checkbox event for the label
+ */
+.checkbox-option input[type=checkbox]:checked + label {
+	left: 60px;
+	background: #005c48;
+}
+
+#is_keyword {
+  display: none;
+}
 /*end of loading*/
