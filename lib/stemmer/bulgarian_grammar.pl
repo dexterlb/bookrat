@@ -181,10 +181,15 @@ verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "�
 verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "ам", C), not_empty(A), verb(C).
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ам", C), not_empty(A), verb(C).
 
-verb_base(X, C) :- atom_concat(A, B, X), present_tense(B), atom_concat(A, "ям", C), not_empty(A), verb(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_simple_tense(B), atom_concat(A, "ям", C), not_empty(A), verb(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_continous_tense(B), atom_concat(A, "ям", C), not_empty(A), verb(C).
-verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ям", C), not_empty(A), verb(C).
+verb_base(x, c) :- atom_concat(a, b, x), present_tense(b), atom_concat(a, "ям", c), not_empty(a), verb(c).
+verb_base(x, c) :- atom_concat(a, b, x), past_simple_tense(b), atom_concat(a, "ям", c), not_empty(a), verb(c).
+verb_base(x, c) :- atom_concat(a, b, x), past_continous_tense(b), atom_concat(a, "ям", c), not_empty(a), verb(c).
+verb_base(x, c) :- atom_concat(a, b, x), past_undefied_tense(b), atom_concat(a, "ям", c), not_empty(a), verb(c).
+
+verb_base(x, c) :- atom_concat(a, b, x), present_tense(b), atom_concat(a, "м", c), not_empty(a), verb(c).
+verb_base(x, c) :- atom_concat(a, b, x), past_simple_tense(b), atom_concat(a, "м", c), not_empty(a), verb(c).
+verb_base(x, c) :- atom_concat(a, b, x), past_continous_tense(b), atom_concat(a, "м", c), not_empty(a), verb(c).
+verb_base(x, c) :- atom_concat(a, b, x), past_undefied_tense(b), atom_concat(a, "м", c), not_empty(a), verb(c).
 
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "та", C), not_empty(A), verb(C).
 verb_base(X, C) :- atom_concat(A, B, X), past_undefied_tense(B), atom_concat(A, "ша", C), not_empty(A), verb(C).
