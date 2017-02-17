@@ -1,5 +1,4 @@
 from . import database
-from .es import search
 
 class Megatron:
     def __init__(self, url):
@@ -10,4 +9,3 @@ class Megatron:
         self.work_controller = database.WorkController(self.database)
         self.tf_idf_controller = database.TfIdfController(self.database)
         self.word_book_controller = database.WordBookController(self.database)
-        self.search = search.Search()

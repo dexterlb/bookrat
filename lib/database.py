@@ -132,7 +132,7 @@ class BookController(Controller):
 
         query_obj = session.query(Book)
         for k in keywords:
-            query_obj = query_obj.filter(Book.title.like('%{0}%'.format(k)))
+            query_obj = query_obj.filter(Book.title.ilike('%{0}%'.format(k)))
 
         book = query_obj.first()
 
@@ -142,29 +142,8 @@ class BookController(Controller):
 
         return book
 
-    def recommendation_to_book(self, session, recommendation):
-        id = recommendation["id"]
-        book = session.query(Book).filter(Book.id == id).one()
-
-        return {
-            "score": recommendation["score"],
-            "matches": recommendation["matches"],
-            "top_words": recommendation["top_words"],
-            "title": book.title,
-            "author": book.author,
-            "url": book.chitanka_id
-        }
-
     def json_book(self, book):
         return {"title": book.title, "author": book.author, "url": book.chitanka_id}
-
-    def recommendations_to_books(self, recommendations):
-        session = self.make_session()
-
-        books = [self.recommendation_to_book(session, r) for r in recommendations]
-
-        session.commit()
-        return books
 
 class TfIdfController(Controller):
     def create_tables(self):
@@ -219,21 +198,34 @@ class TfIdfController(Controller):
             create index tfidf_word_index on tfidf(word);
             create index tfidf_score_index on tfidf(tfidf_score);
             '''
-    )
+        )
 
     def compute_top_words(self):
         TopWords.__table__.drop(self.database.engine)
         print('computing top words')
         self.database.engine.execute(
             '''
-            create table topwords(book_id, words) as
-            select b.id as book_id,
-            array(select word from tfidf where book_id = b.id
-            order by tfidf_score desc limit 300) as words from book as b
+            create table topwords(book_id, word, tfidf_score) as
+            select b.id as book_id, w.word as word, w.tfidf_score as tfidf_score
+            from book as b
+            join lateral (
+                select word, tfidf_score from tfidf where book_id = b.id
+                order by tfidf_score desc limit 600
+            ) w on true
             with data;
             '''
         )
         print('finished computing top words')
+        print('creating index on top words')
+        self.database.engine.execute(
+            '''
+            create index topwords_book_id_index on topwords(book_id);
+            create index topwords_word_index on topwords(word);
+            '''
+        )
+        print('yay')
+
+
 
 
     def get_top_words(self):
@@ -268,37 +260,47 @@ class TfIdfController(Controller):
 
     def recommendations(self, book_id):
         session = self.make_session()
-        top = session.query(TopWords).filter(TopWords.book_id == book_id).first()
-        words = top.words
-
         results = session.execute(
             '''
-            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
-            from topwords f
-            where f.book_id != :id and f.words && (:words :: varchar[])
-            order by number desc limit 5;
+            select
+                a.book_id as book_id,
+                count(a.word) as score,
+                array_agg(a.word) as common_words
+            from topwords as a
+            join lateral (
+                select word, book_id from topwords where book_id = :id
+            ) as b on a.word = b.word
+            where a.book_id != b.book_id
+            group by a.book_id
+            order by score desc
+            limit 10;
             ''',
             {
                 'id': book_id,
-                'words': words
             }
         )
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, int(result[1]))
+            yield SearchResult(book, int(result[1]), list(result[2]))
 
         session.commit()
 
     def keyword_recommendations(self, keywords):
-        keywords = keywords.split()
         session = self.make_session()
         results = session.execute(
             '''
-            select f.book_id, (select count(*) from unnest(f.words) u(w) where u.w = any (:words :: varchar[])) as number
-            from topwords f
-            where f.words && (:words :: varchar[])
-            order by number desc limit 5;
+            select
+                a.book_id as book_id,
+                count(a.word) as score,
+                array_agg(a.word) as common_words
+            from topwords as a
+            join lateral (
+                select u.w as word from unnest(:words) u(w)
+            ) as b on a.word = b.word
+            group by a.book_id
+            order by score desc, sum(a.tfidf_score) desc
+            limit 10;
             ''',
             {
                 'words': keywords
@@ -307,15 +309,16 @@ class TfIdfController(Controller):
 
         for result in results:
             book = session.query(Book).filter(Book.id == result[0]).first()
-            yield SearchResult(book, int(result[1]))
+            yield SearchResult(book, int(result[1]), list(result[2]))
 
         session.commit()
 
 
 class SearchResult:
-    def __init__(self, book, num_matches):
+    def __init__(self, book, num_matches, common_words):
         self.book = book
         self.num_matches = num_matches
+        self.common_words = common_words
 
     def __repr__(self):
         return self.book.title + ' [' + str(self.num_matches) + ']'
@@ -376,7 +379,8 @@ class Tfidf(Base):
 class TopWords(Base):
     __tablename__ = 'topwords'
     book_id = Column(Integer, primary_key=True)
-    words = Column(ARRAY(String))
+    word = Column(String)
+    tfidf_score = Column(Float)
     def __repr__(self):
        return "<topwords(book_id='%s', words='%s' )>" % (
         self.book_id, self.word, self.tfidf_score)
